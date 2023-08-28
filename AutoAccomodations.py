@@ -12,15 +12,6 @@ from canvasapi import Canvas
 from dotenv import load_dotenv
 from os import getenv
 
-# Load .env file from folder.
-load_dotenv()
-
-# Load the Canvas API variables from the .env file.
-API_URL = getenv("CANVAS_API_URL")
-API_KEY = getenv("CANVAS_API_KEY")
-
-canvas = Canvas(API_URL, API_KEY)
-
 def select_course(canvas):
     """
     Uses a simple command line interface to prompt the user to choose a modifiable course. In order for a user to select a course, they must be added as a Designer to the course in Canvas.
@@ -130,6 +121,15 @@ def modify_extensions_for_quizzes(course, student, time_multiplier):
         ])
 
         print(f"{quiz.title} updated! {student.name} now has {extra_time} minutes extra on this quiz.")
+
+# Load .env file from folder.
+load_dotenv()
+
+# Load the Canvas API variables from the .env file.
+API_URL = getenv("CANVAS_API_URL")
+API_KEY = getenv("CANVAS_API_KEY")
+
+canvas = Canvas(API_URL, API_KEY)
 
 course = select_course(canvas)
 
