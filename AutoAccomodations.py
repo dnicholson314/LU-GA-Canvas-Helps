@@ -142,6 +142,6 @@ while True:
     modify_extensions_for_quizzes(course, student, time_multiplier)
 
     print("\n\n\n")
-    keep_looping = input(f"\n Would you like to modify accomodations for another student in {course_name}? (y/n): ")
+    keep_looping = input(f"\n Would you like to modify accomodations for another student in {course.name}? (y/n): ")
     if keep_looping != "y":
         break
