@@ -5,8 +5,8 @@ Imports from the following modules:
 
 * `canvasapi`: to access information from Canvas courses
 * `dotenv`: to load variables containing Canvas API information from an .env file
-* `os`: to collect the values of the environment variables in the .env file 
 * `dateutil`: to parse datetime strings denoting the start dates of Canvas courses
+* `os`: to collect the values of the environment variables in the .env file
 """
 
 from canvasapi import Canvas
@@ -28,29 +28,24 @@ def select_course(canvas):
     [Course](https://canvasapi.readthedocs.io/en/stable/course-ref.html)
         Points to the course the user chose.
     """
-
-    INIT_COURSE_RESULTS = canvas.get_courses(enrollment_type="designer")
+    
+    all_course_results = canvas.get_courses(enrollment_type="designer")
+    INIT_COURSE_RESULTS = list(filter(lambda course: course.start_at != None, all_course_results))
     course_results = INIT_COURSE_RESULTS
 
     def match_course(course_query, course):
         sanitized_name = course.name.strip().upper()
-        if course.start_at == None:
-            course_name_with_date = sanitized_name
-        else:
-            start_date = parse(course.start_at)
-            course_name_with_date = f"- {sanitized_name} ({start_date.month}-{start_date.year})"
-        
+        start_date = parse(course.start_at)
+        course_name_with_date = f"- {course.name} ({start_date.month}-{start_date.year})"
+
         return course_query in course_name_with_date
 
     while True:
         print("Which course would you like to access?")
         print("The options are: \n")
         for course in course_results:
-            if course.start_at == None:
-                print(f"    {course.name}")
-            else:
-                start_date = parse(course.start_at)
-                print(f"    {course.name} ({start_date.month}-{start_date.year})")
+            start_date = parse(course.start_at)
+            print(f"    {course.name} ({start_date.month}-{start_date.year})")
 
         course_input = input("\nChoose one of the above options: ")
         course_query = course_input.strip().upper()
@@ -79,27 +74,38 @@ def select_student_in_course(course):
         Points to the student the user chose.
     """
 
-    students = course.get_users(enrollment_type="student")
+    ALL_STUDENTS = course.get_users(enrollment_type="student")
 
-    student_results = students
+    student_results = ALL_STUDENTS
+
+    global students_searched
+
+    def match_student(student_query, student):
+        global students_searched
+        students_searched += 1
+        print(f"Searching students ({students_searched} so far)...", end="\r")
+
+        return student_query in student.name.strip().lower()
 
     while True:
+        students_searched = 0
+
         student_input = input("Search for the name of the student with accomodations: ")
         student_query = student_input.strip().lower()
-        student_results = list(filter(lambda student: student_query in student.name.strip().lower(), student_results))
+        student_results = list(filter(lambda student: match_student(student_query, student), student_results))
 
         student_results_len = len(student_results)
 
         if student_results_len == 0:
-            print("No such student was found.")
-            student_results = students
+            print("\nNo such student was found.")
+            student_results = ALL_STUDENTS
             continue
         elif student_results_len == 1:
             selected_student = student_results[0]
-            print(f"You chose {selected_student.name}.")
+            print(f"\nYou chose {selected_student.name}.")
             return selected_student
 
-        print(f"Your query returned {student_results_len} students.")
+        print(f"\nYour query returned {student_results_len} students.")
         print("Here are their names:\n")
         for student in student_results:
             print(f"    {student.name}")
