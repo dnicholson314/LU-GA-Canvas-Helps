@@ -1,14 +1,16 @@
 """
 A command line script that automatically applies quiz/test time limit accomodations for a given student in a given Canvas course.
 
-Imports the following modules:
+Imports from the following modules:
 
 * `canvasapi`: to access information from Canvas courses
 * `dotenv`: to load variables containing Canvas API information from an .env file
 * `os`: to collect the values of the environment variables in the .env file 
+* `dateutil`: to parse datetime strings denoting the start dates of Canvas courses
 """
 
 from canvasapi import Canvas
+from dateutil.parser import parse
 from dotenv import load_dotenv
 from os import getenv
 
@@ -27,21 +29,30 @@ def select_course(canvas):
         Points to the course the user chose.
     """
 
-    course_results = canvas.get_courses(enrollment_type="designer")
+    INIT_COURSE_RESULTS = canvas.get_courses(enrollment_type="designer")
+    course_results = INIT_COURSE_RESULTS
+
+    def match_course(course_query, course):
+        sanitized_name = course.name.strip().upper()
+        start_date = parse(course.start_at)
+        course_name_with_date = f"- {course.name} ({start_date.month}-{start_date.year})"
+        
+        return course_query in course_name_with_date
 
     while True:
         print("Which course would you like to access?")
-        print("The options are: ")
+        print("The options are: \n")
         for course in course_results:
-            print(f"- {course.name}")
+            start_date = parse(course.start_at)
+            print(f"    {course.name} ({start_date.month}-{start_date.year})")
 
-        course_input = input("Choose one of the above options: ")
+        course_input = input("\nChoose one of the above options: ")
         course_query = course_input.strip().upper()
-        course_results = list(filter(lambda course: course_query in course.name.strip().upper(), course_results))
+        course_results = list(filter(lambda course: match_course(course_query, course), course_results))
 
         if len(course_results) == 0:
             print("No such course was found.")
-            course_results = canvas.get_courses(enrollment_type="designer")
+            course_results = INIT_COURSE_RESULTS
         elif len(course_results) == 1:
             course = course_results[0]
             print(f"You chose {course.name}.")
@@ -83,9 +94,10 @@ def select_student_in_course(course):
             return selected_student
 
         print(f"Your query returned {student_results_len} students.")
-        print("Here are their names:")
+        print("Here are their names:\n")
         for student in student_results:
-            print(f"- {student.name}")
+            print(f"    {student.name}")
+        print()
 
 def modify_extensions_for_quizzes(course, student, time_multiplier):
     """
