@@ -34,8 +34,11 @@ def select_course(canvas):
 
     def match_course(course_query, course):
         sanitized_name = course.name.strip().upper()
-        start_date = parse(course.start_at)
-        course_name_with_date = f"- {course.name} ({start_date.month}-{start_date.year})"
+        if course.start_at == None:
+            course_name_with_date = sanitized_name
+        else:
+            start_date = parse(course.start_at)
+            course_name_with_date = f"- {sanitized_name} ({start_date.month}-{start_date.year})"
         
         return course_query in course_name_with_date
 
@@ -43,8 +46,11 @@ def select_course(canvas):
         print("Which course would you like to access?")
         print("The options are: \n")
         for course in course_results:
-            start_date = parse(course.start_at)
-            print(f"    {course.name} ({start_date.month}-{start_date.year})")
+            if course.start_at == None:
+                print(f"    {course.name}")
+            else:
+                start_date = parse(course.start_at)
+                print(f"    {course.name} ({start_date.month}-{start_date.year})")
 
         course_input = input("\nChoose one of the above options: ")
         course_query = course_input.strip().upper()
