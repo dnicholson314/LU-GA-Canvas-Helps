@@ -1,5 +1,6 @@
 """
-A command line script that automatically applies quiz/test time limit accomodations for a given student in a given Canvas course.
+A command line script that automatically applies quiz/test time limit accomodations 
+for a given student in a given Canvas course.
 
 Imports from the following modules:
 
@@ -14,9 +15,32 @@ from dateutil.parser import parse
 from dotenv import load_dotenv
 from os import getenv
 
+def create_canvas_object_from_env_file():
+    # Load .env file from folder.
+    if not load_dotenv():
+        print("No API details found. Did you create a .env file with the Canvas URL and your API key?")
+        raise FileNotFoundError()
+
+    # Load the Canvas API variables from the .env file.
+    try:
+        API_URL = getenv("CANVAS_API_URL")
+        API_KEY = getenv("CANVAS_API_KEY")
+    except Exception as e:
+        print("Failed to load the URL and API key from the .env file.")
+        raise(e)
+
+    try:
+        canvas = Canvas(API_URL, API_KEY)
+    except Exception as e:
+        print("Invalid URL or API key. Check your .env file to make sure you typed the values properly.")
+        raise(e)
+    
+    return canvas
+
 def select_course(canvas):
     """
-    Uses a simple command line interface to prompt the user to choose a modifiable course. In order for a user to select a course, they must be added as a Designer to the course in Canvas.
+    Uses a simple command line interface to prompt the user to choose a modifiable course. 
+    In order for a user to select a course, they must be added as a Designer to the course in Canvas.
 
     Parameters
     ----------
@@ -78,8 +102,6 @@ def select_student_in_course(course):
 
     student_results = ALL_STUDENTS
 
-    global students_searched
-
     def match_student(student_query, student):
         global students_searched
         students_searched += 1
@@ -88,6 +110,7 @@ def select_student_in_course(course):
         return student_query in student.name.strip().lower()
 
     while True:
+        global students_searched
         students_searched = 0
 
         student_input = input("Search for the name of the student with accomodations: ")
@@ -113,7 +136,9 @@ def select_student_in_course(course):
 
 def modify_extensions_for_quizzes(course, student, time_multiplier):
     """
-    Updates the time limit extensions for all quizzes in the given course for the given student, setting them equal to `time_multiplier` times the time limit for the quiz.
+    Updates the time limit extensions for all quizzes in the given course 
+    for the given student, setting them equal to `time_multiplier` times 
+    the time limit for the quiz.
 
     Parameters
     ----------
@@ -124,7 +149,8 @@ def modify_extensions_for_quizzes(course, student, time_multiplier):
         The student to modify time limit extensions for.
     
     `time_multiplier`: float
-        The proportion of the time limit that should be added as a time limit extension for each quiz.
+        The proportion of the time limit that should be added as a time limit 
+        extension for each quiz.
     """
 
     quizzes = course.get_quizzes()
@@ -146,26 +172,24 @@ def modify_extensions_for_quizzes(course, student, time_multiplier):
 
         print(f"{quiz.title} updated! {student.name} now has {extra_time} minutes extra on this quiz.")
 
-# Load .env file from folder.
-load_dotenv()
-
-# Load the Canvas API variables from the .env file.
-API_URL = getenv("CANVAS_API_URL")
-API_KEY = getenv("CANVAS_API_KEY")
-
-canvas = Canvas(API_URL, API_KEY)
-
+canvas = create_canvas_object_from_env_file()
 course = select_course(canvas)
 
 while True:
-    print("\n\n\n")
+    print()
     student = select_student_in_course(course)
 
-    print("\n\n\n")
-    time_multiplier = int(input("Enter the percentage of time to add (e.g. '50' for 50%): "))/100
+    print()
+    while True:
+        try:
+            time_multiplier = int(input("Enter the percentage of time to add (e.g. '50' for 50%): "))/100
+            break
+        except ValueError:
+            print("Invalid input, try again.")
+
     modify_extensions_for_quizzes(course, student, time_multiplier)
 
-    print("\n\n\n")
+    print()
     keep_looping = input(f"\n Would you like to modify accomodations for another student in {course.name}? (y/n): ")
     if keep_looping != "y":
         break
