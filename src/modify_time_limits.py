@@ -9,14 +9,14 @@ Imports from the following modules:
 * `dateutil`: to parse datetime strings denoting the start dates of Canvas courses
 * `os`: to collect the values of the environment variables in the .env file
 """
-import cvapiutils
+import modules.canvasapiutils as cvu
 
-canvas = cvapiutils.create_canvas_object()
-course = cvapiutils.prompt_for_course(canvas)
+canvas = cvu.create_canvas_object()
+course = cvu.prompt_for_course(canvas)
 
 while True:
     print()
-    student = cvapiutils.prompt_for_student(course)
+    student = cvu.prompt_for_student(course)
     
     print()
     while True:
@@ -26,7 +26,7 @@ while True:
         except ValueError:
             print("Invalid input, try again.")
 
-    cvapiutils.set_time_limits_for_quizzes(course, student, time_multiplier)
+    cvu.set_time_limits_for_quizzes(course, student, time_multiplier)
 
     print()
     keep_looping = input(f"Would you like to modify accomodations for another student in {course.name}? (y/n): ")

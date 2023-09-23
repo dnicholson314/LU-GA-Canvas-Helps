@@ -1,7 +1,6 @@
-from canvasapi import Canvas, course as cvc, user as cvu, quiz as cvq, exceptions as cve
+from canvasapi import Canvas, course as cvc, user as cvu, quiz as cvq, exceptions as cve, assignment as cva, paginated_list as cvp
 from dateutil.parser import parse
 from dotenv import load_dotenv
-from json import loads
 from os import getenv
 
 def printif(string: str, logging: bool) -> None:
@@ -73,9 +72,9 @@ def create_canvas_object() -> Canvas:
             api_key = input("Enter your API key from Canvas: ")
             create_env_file(api_key)
 
-def get_courses_from_canvas_object(canvas: Canvas, logging = True, enrolled_as = "designer") -> list[cvc.Course]:
+def get_courses_from_canvas_object(canvas: Canvas, logging = True, enrolled_as = "designer", **kwargs) -> list[cvc.Course]:
     printif("Loading courses from Canvas...", logging)
-    courses = canvas.get_courses(enrollment_type=enrolled_as)
+    courses = canvas.get_courses(enrollment_type=enrolled_as, **kwargs)
 
     return courses
 
@@ -129,7 +128,18 @@ def filter_users_by_query(source: cvc.Course | list[cvu.User], query: str, enrol
         sanitized_query = sanitize_string(query)
         return [user for user in source if sanitized_query in sanitize_string(user.name)]
     else:
-        raise TypeError("Expected list or course")
+        raise TypeError("Expected Course object or list")
+
+def process_bad_request(e: cve.BadRequest) -> bool:
+    args_string = e.args[0]
+    if type(args_string) != str:
+        raise e
+            
+    if "2 or more characters is required" not in args_string:
+        raise e
+            
+    print("Too few characters, try again")
+    return True
 
 def prompt_for_student(course: cvc.Course) -> cvu.User:
     """
@@ -147,27 +157,16 @@ def prompt_for_student(course: cvc.Course) -> cvu.User:
     """
 
     source = course
-
-    def process_bad_request(e: cve.BadRequest) -> None:
-        args_string = e.args[0]
-        if type(args_string) != str:
-            raise e
-                
-        if "2 or more characters is required" not in args_string:
-            raise e
-                
-        print("Too few characters, try again")
-
     while True:
         while True:
             try:
-                query = input("Search for the name of the student with accomodations: ")
+                query = input("Search for the student by name: ")
                 source = filter_users_by_query(source, query)
-                source_len = len(source)
                 break
             except cve.BadRequest as e:
                 process_bad_request(e)
 
+        source_len = len(source)
         if source_len == 0:
             print("\nNo such student was found.")
             source = course
@@ -183,6 +182,33 @@ def prompt_for_student(course: cvc.Course) -> cvu.User:
             print(f"    {student.name}")
         print()
 
+def filter_assignments_by_query(source: list[cva.Assignment], query: str, has_due_date = True) -> list[cva.Assignment]:
+    sanitized_query = sanitize_string(query)
+    return [assignment for assignment in source if sanitized_query in sanitize_string(assignment.name)]
+
+def prompt_for_assignment(course: cvc.Course, has_due_date = True):
+    all_assignments = [assignment for assignment in course.get_assignments() if not has_due_date or assignment.due_at]
+    source = all_assignments
+    
+    while True:
+        print("Which quiz would you like to access?")
+        print("The options are:")
+        print()
+        for assignment in source:
+            print(f"    {assignment.name}")
+        print()
+
+        query = input("\nChoose one of the above options: ")
+        source = filter_assignments_by_query(source, query)
+
+        if len(source) == 0:
+            print("No such course was found.")
+            source = all_assignments
+        elif len(source) == 1:
+            assignment = source[0]
+            print(f"You chose {assignment.name}.")
+            return assignment
+
 def set_time_limit_for_quiz(course: cvc.Course, 
                             student: cvu.User, 
                             quiz: cvq.Quiz, 
@@ -190,7 +216,7 @@ def set_time_limit_for_quiz(course: cvc.Course,
                             logging = True) -> None:
 
     if not quiz.time_limit:
-        printif("The quiz has no time limit.", logging)
+        printif(f"{quiz.title} has no time limit.", logging)
         return
     
     extra_time = quiz.time_limit * time_multiplier
@@ -228,7 +254,7 @@ def set_time_limits_for_quizzes(course: cvc.Course, student: cvu.User, time_mult
         Whether or not the function should log to the console for each updated quiz.
     """
 
-    quizzes = [course for course in course.get_quizzes() if quiz.time_limit]
+    quizzes = [quiz for quiz in course.get_quizzes() if quiz.time_limit]
 
     for quiz in quizzes:
         set_time_limit_for_quiz(course, student, quiz, time_multiplier, logging)
