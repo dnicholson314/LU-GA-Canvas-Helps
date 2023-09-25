@@ -12,7 +12,7 @@ while True:
     print()
     assignment = cvu.prompt_for_assignment(course)
     print()
-    
+
     due_date = parse(assignment.due_at)
     print(f"The current due date is {due_date.date()}.")
     try:
@@ -23,6 +23,10 @@ while True:
 
     assignment.create_override(assignment_override={"student_ids": [student.id], "title": student.name, "due_at": due_date, "lock_at": due_date})
 
-    keep_looping = input(f"Would you like to modify accomodations for another student in {course.name}? (y/n): ")
+    due_date = parse(assignment.due_at)
+    print(f"Due date updated! The new due date is {due_date.date()}")
+    print()
+
+    keep_looping = input(f"Would you like to modify due dates for another student in {course.name}? (y/n): ")
     if keep_looping != "y":
         break
