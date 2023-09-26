@@ -1,10 +1,22 @@
 import modules.canvasapiutils as cvu
 
 from dateutil.parser import parse
+from datetime import datetime
 from dateutil.parser._parser import ParserError
 
 canvas = cvu.create_canvas_object()
 course = cvu.prompt_for_course(canvas)
+
+def get_new_due_date() -> datetime:
+    while True:
+        try:
+            date_query = input(f"Type a value for the new due date (mm-dd-YYYY): ")
+            new_due_date = parse(date_query)
+            confirm_date = input(f"Confirm new date as {new_due_date} (y/n)? ")
+            if confirm_date == "y":
+                return new_due_date
+        except ParserError:
+            print("Please enter a date in the proper format.")
 
 while True:
     print()
@@ -13,18 +25,14 @@ while True:
     assignment = cvu.prompt_for_assignment(course)
     print()
 
-    due_date = parse(assignment.due_at)
-    print(f"The current due date is {due_date.date()}.")
-    try:
-        date_query = input(f"Type a value for the new due date (mm-dd-YYYY): ")
-        due_date = parse(date_query)
-    except ParserError as pe:
-        print(pe.args[0])
+    old_due_date = cvu.get_assignment_or_quiz_due_date(course, assignment)
+    print(f"The current due date is {old_due_date}.")
 
-    assignment.create_override(assignment_override={"student_ids": [student.id], "title": student.name, "due_at": due_date, "lock_at": due_date})
+    new_due_date = get_new_due_date()    
+    assignment.create_override(assignment_override={"student_ids": [student.id], "title": student.name, "due_at": new_due_date, "lock_at": new_due_date})
 
-    due_date = parse(assignment.due_at)
-    print(f"Due date updated! The new due date is {due_date.date()}")
+    updated_due_date = cvu.get_assignment_or_quiz_due_date(course, assignment)
+    print(f"Due date updated! The new due date is {updated_due_date}.")
     print()
 
     keep_looping = input(f"Would you like to modify due dates for another student in {course.name}? (y/n): ")

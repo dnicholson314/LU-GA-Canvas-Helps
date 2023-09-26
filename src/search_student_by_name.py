@@ -1,12 +1,12 @@
-import modules.canvasapiutils as canvasapiutils
+import modules.canvasapiutils as cvu
 
-from canvasapi import exceptions as cve
+from canvasapi.exceptions import BadRequest
 from itertools import chain
 
 def print_selected_courses(selected_courses):
     for i, course in zip(range(len(selected_courses)), selected_courses.keys()):
         selected = "*" if selected_courses[course] else " "
-        print(f"{selected} {i+1}. {canvasapiutils.course_name_with_date(course)}")
+        print(f"{selected} {i+1}. {cvu.course_name_with_date(course)}")
 
 def confirm_courses_to_search(selected_courses):
     while True:
@@ -33,13 +33,13 @@ def take_student_query(sources):
     while True:
         try:
             query = input("Search for the student by name: ")
-            sources = [canvasapiutils.filter_users_by_query(source, query) for source in sources]
+            sources = [cvu.filter_users_by_query(source, query) for source in sources]
             return sources
-        except cve.BadRequest as e:
-            canvasapiutils.process_bad_request(e)
+        except BadRequest as e:
+            cvu.process_bad_request(e)
 
-canvas = canvasapiutils.create_canvas_object()
-courses = canvasapiutils.get_courses_from_canvas_object(canvas)
+canvas = cvu.create_canvas_object()
+courses = cvu.get_courses_from_canvas_object(canvas)
 
 init_courses = {course: False for course in courses}
 selected_courses_dict = confirm_courses_to_search(init_courses)
@@ -86,5 +86,5 @@ while True:
     print()
 
     keep_looping = input(f"Would you like to keep looking for students in these courses? (y/n): ")
-    if keep_looping != "y":
+    if cvu.sanitize_string(keep_looping) != "y":
         break

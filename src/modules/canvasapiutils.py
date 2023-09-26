@@ -1,7 +1,15 @@
-from canvasapi import Canvas, course as cvc, user as cvu, quiz as cvq, exceptions as cve, assignment as cva, paginated_list as cvp
+from datetime import datetime
+from os import getenv
+
+from canvasapi import Canvas
+from canvasapi.assignment import Assignment
+from canvasapi.course import Course
+from canvasapi.exceptions import BadRequest
+from canvasapi.quiz import Quiz
+from canvasapi.user import User
 from dateutil.parser import parse
 from dotenv import load_dotenv
-from os import getenv
+
 
 def printif(string: str, logging: bool) -> None:
     if logging:
@@ -23,7 +31,7 @@ def sanitize_string(string: str) -> str:
     """
     return string.strip().lower()
 
-def course_name_with_date(course: cvc.Course) -> str:
+def course_name_with_date(course: Course) -> str:
     """
     Prepares courses to be queried by creating a string
     containing the course name and the start date.
@@ -42,7 +50,7 @@ def course_name_with_date(course: cvc.Course) -> str:
     start_date = parse(course.start_at)
     return f"{course.name} ({start_date.month}-{start_date.year})" 
 
-def match_course(query: str, course: cvc.Course) -> bool:
+def match_course(query: str, course: Course) -> bool:
     sanitized_query = sanitize_string(query)
     sanitized_course_name_with_date = sanitize_string(course_name_with_date(course))
 
@@ -72,19 +80,19 @@ def create_canvas_object() -> Canvas:
             api_key = input("Enter your API key from Canvas: ")
             create_env_file(api_key)
 
-def get_courses_from_canvas_object(canvas: Canvas, logging = True, enrolled_as = "designer", **kwargs) -> list[cvc.Course]:
+def get_courses_from_canvas_object(canvas: Canvas, logging = True, enrolled_as = "designer", **kwargs) -> list[Course]:
     printif("Loading courses from Canvas...", logging)
     courses = canvas.get_courses(enrollment_type=enrolled_as, **kwargs)
 
     return courses
 
-def filter_courses_by_query(courses: list[cvc.Course], query: str) -> list[cvc.Course]:
+def filter_courses_by_query(courses: list[Course], query: str) -> list[Course]:
     init_courses = [course for course in courses if course.start_at]
     course_results = [course for course in init_courses if match_course(query, course)]
 
     return course_results
 
-def prompt_for_course(canvas: Canvas) -> cvc.Course:
+def prompt_for_course(canvas: Canvas) -> Course:
     """
     Uses a simple command line interface to prompt the user to choose a modifiable course. 
     In order for a user to select a course, they must be added as a Designer to the course in Canvas.
@@ -121,8 +129,8 @@ def prompt_for_course(canvas: Canvas) -> cvc.Course:
             print(f"You chose {course.name}.")
             return course
 
-def filter_users_by_query(source: cvc.Course | list[cvu.User], query: str, enrolled_as = "student") -> list[cvu.User]:
-    if type(source) == cvc.Course:
+def filter_users_by_query(source: Course | list[User], query: str, enrolled_as = "student") -> list[User]:
+    if type(source) == Course:
         return list(source.get_users(search_term = query, enrollment_type = enrolled_as))
     elif type(source) == list:
         sanitized_query = sanitize_string(query)
@@ -130,7 +138,7 @@ def filter_users_by_query(source: cvc.Course | list[cvu.User], query: str, enrol
     else:
         raise TypeError("Expected Course object or list")
 
-def process_bad_request(e: cve.BadRequest) -> bool:
+def process_bad_request(e: BadRequest) -> bool:
     args_string = e.args[0]
     if type(args_string) != str:
         raise e
@@ -141,7 +149,7 @@ def process_bad_request(e: cve.BadRequest) -> bool:
     print("Too few characters, try again")
     return True
 
-def prompt_for_student(course: cvc.Course) -> cvu.User:
+def prompt_for_student(course: Course) -> User:
     """
     Uses a simple command line interface to prompt the user to choose a student from a given course.
 
@@ -163,7 +171,7 @@ def prompt_for_student(course: cvc.Course) -> cvu.User:
                 query = input("Search for the student by name: ")
                 source = filter_users_by_query(source, query)
                 break
-            except cve.BadRequest as e:
+            except BadRequest as e:
                 process_bad_request(e)
 
         source_len = len(source)
@@ -182,23 +190,23 @@ def prompt_for_student(course: cvc.Course) -> cvu.User:
             print(f"    {student.name}")
         print()
 
-def filter_assignments_by_query(source: list[cva.Assignment], query: str, has_due_date = True) -> list[cva.Assignment]:
+def filter_assignments_by_query(source: list[Assignment], query: str, has_due_date = True) -> list[Assignment]:
     sanitized_query = sanitize_string(query)
     return [assignment for assignment in source if sanitized_query in sanitize_string(assignment.name)]
 
-def prompt_for_assignment(course: cvc.Course, has_due_date = True):
+def prompt_for_assignment(course: Course, has_due_date = True) -> Assignment:
     all_assignments = [assignment for assignment in course.get_assignments() if not has_due_date or assignment.due_at]
     source = all_assignments
     
     while True:
-        print("Which quiz would you like to access?")
+        print("Which assignment would you like to access?")
         print("The options are:")
         print()
         for assignment in source:
             print(f"    {assignment.name}")
         print()
 
-        query = input("\nChoose one of the above options: ")
+        query = input("Choose one of the above options: ")
         source = filter_assignments_by_query(source, query)
 
         if len(source) == 0:
@@ -209,9 +217,9 @@ def prompt_for_assignment(course: cvc.Course, has_due_date = True):
             print(f"You chose {assignment.name}.")
             return assignment
 
-def set_time_limit_for_quiz(course: cvc.Course, 
-                            student: cvu.User, 
-                            quiz: cvq.Quiz, 
+def set_time_limit_for_quiz(course: Course,
+                            student: User, 
+                            quiz: Quiz, 
                             time_multiplier: float, 
                             logging = True) -> None:
 
@@ -232,7 +240,7 @@ def set_time_limit_for_quiz(course: cvc.Course,
 
     printif(f"{quiz.title} updated! {student.name} now has {extra_time} minutes extra on this quiz.", logging)
 
-def set_time_limits_for_quizzes(course: cvc.Course, student: cvu.User, time_multiplier: float, logging = True) -> None:
+def set_time_limits_for_quizzes(course: Course, student: User, time_multiplier: float, logging = True) -> None:
     """
     Updates the time limit extensions for all timed quizzes in the given course 
     for the given student. They are set to `time_multiplier` times the default 
@@ -258,3 +266,13 @@ def set_time_limits_for_quizzes(course: cvc.Course, student: cvu.User, time_mult
 
     for quiz in quizzes:
         set_time_limit_for_quiz(course, student, quiz, time_multiplier, logging)
+
+def get_assignment_or_quiz_due_date(course: Course, assignment: Assignment) -> datetime:
+    if assignment.is_quiz_assignment:
+        quiz_id = assignment.quiz_id
+        quiz = course.get_quiz(quiz_id)
+        due_date = parse(quiz.due_at)
+    else:
+        due_date = parse(assignment.due_at)
+    
+    return due_date
