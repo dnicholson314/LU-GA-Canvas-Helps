@@ -1,5 +1,5 @@
 from datetime import datetime
-from os import getenv
+import os
 
 from canvasapi import Canvas
 from canvasapi.assignment import Assignment
@@ -10,6 +10,9 @@ from canvasapi.user import User
 from dateutil.parser import parse
 from dotenv import load_dotenv
 
+current_dir = os.path.dirname(os.path.realpath(__file__))
+root_dir = f"{current_dir}\..\.."
+os.chdir(root_dir)
 
 def printif(string: str, logging: bool) -> None:
     if logging:
@@ -62,8 +65,8 @@ def create_env_file(api_key: str, api_url="https://canvas.liberty.edu", path=".e
 
 def get_canvas_object_from_env_file(path=".env") -> Canvas:
     load_dotenv(path)
-    API_URL = getenv("CANVAS_API_URL")
-    API_KEY = getenv("CANVAS_API_KEY")
+    API_URL = os.getenv("CANVAS_API_URL")
+    API_KEY = os.getenv("CANVAS_API_KEY")
 
     canvas = Canvas(API_URL, API_KEY)
 
