@@ -109,7 +109,7 @@ def prompt_for_course(canvas: Canvas) -> Course:
         Points to the course the user chose.
     """
     
-    all_course_results = get_courses_from_canvas_object(canvas)
+    all_course_results = [course for course in get_courses_from_canvas_object(canvas) if course.start_at]
     course_results = all_course_results
 
     while True:
