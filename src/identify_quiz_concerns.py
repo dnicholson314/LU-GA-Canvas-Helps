@@ -85,5 +85,6 @@ quiz_concern_students = find_quiz_concern_students(course)
 
 if len(quiz_concern_students) == 0:
     print("No students need quiz concern emails sent!")
+    input("Press ENTER to quit.")
 else:
     send_msg(quiz_concern_students, course)
