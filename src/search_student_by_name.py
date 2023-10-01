@@ -1,4 +1,4 @@
-import modules.canvasapiutils as cvu
+import modules.cvutils as cvu
 
 from canvasapi.exceptions import BadRequest
 from itertools import chain
@@ -6,6 +6,8 @@ from itertools import chain
 def print_selected_courses(selected_courses):
     for i, course in zip(range(len(selected_courses)), selected_courses.keys()):
         selected = "*" if selected_courses[course] else " "
+        if not course.start_at:
+            continue
         print(f"{selected} {i+1}. {cvu.course_name_with_date(course)}")
 
 def confirm_courses_to_search(selected_courses):

@@ -1,4 +1,4 @@
-import modules.canvasapiutils as cvu
+import modules.cvutils as cvu
 
 CHUNK_SIZE = 20
 TOLERANCE = 3
@@ -71,6 +71,7 @@ def send_msg(quiz_concern_students, course):
     print(f"{CONCERN_MESSAGE}")
     print()
     print("-------------------")
+    print_selected_students(quiz_concern_students)
     final_confirmation = input("FINAL CONFIRMATION: Do you want to message these students? (y/n) ")
     if final_confirmation != "y":
         return

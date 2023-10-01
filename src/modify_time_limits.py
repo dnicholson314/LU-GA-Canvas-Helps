@@ -9,7 +9,7 @@ Imports from the following modules:
 * `dateutil`: to parse datetime strings denoting the start dates of Canvas courses
 * `os`: to collect the values of the environment variables in the .env file
 """
-import modules.canvasapiutils as cvu
+import modules.cvutils as cvu
 
 canvas = cvu.create_canvas_object()
 course = cvu.prompt_for_course(canvas)

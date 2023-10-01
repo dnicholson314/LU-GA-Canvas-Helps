@@ -1,4 +1,4 @@
-import modules.canvasapiutils as cvu
+import modules.cvutils as cvu
 
 from dateutil.parser import parse
 from datetime import datetime
@@ -26,13 +26,13 @@ while True:
     print()
 
     old_due_date = cvu.get_assignment_or_quiz_due_date(course, assignment)
+    submission = assignment.get_submission(user=student.id)
     print(f"The current due date is {old_due_date}.")
 
     new_due_date = get_new_due_date()    
     assignment.create_override(assignment_override={"student_ids": [student.id], "title": student.name, "due_at": new_due_date, "lock_at": new_due_date})
 
-    updated_due_date = cvu.get_assignment_or_quiz_due_date(course, assignment)
-    print(f"Due date updated! The new due date is {updated_due_date}.")
+    print(f"Due date updated! The new due date is {new_due_date}.")
     print()
 
     keep_looping = input(f"Would you like to modify due dates for another student in {course.name}? (y/n): ")

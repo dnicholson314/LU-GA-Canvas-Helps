@@ -1,6 +1,5 @@
 import os
 from datetime import datetime
-from typing import Optional
 
 import dotenv as dv
 from canvasapi import Canvas
@@ -101,7 +100,7 @@ def create_canvas_object() -> Canvas:
         except FileNotFoundError as e:
             print(e)
             create_env_file()
-        except NameError as e:
+        except (NameError, InvalidAccessToken) as e:
             print(e)
             api_key = input("Enter your API key from Canvas: ")
             update_env_file(CANVAS_API_URL="https://canvas.liberty.edu", CANVAS_API_KEY=api_key)
