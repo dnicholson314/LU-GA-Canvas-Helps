@@ -1,6 +1,3 @@
-import os
-
-import dotenv as dv
 import requests
 
 import modules.thutils as thu
@@ -17,7 +14,7 @@ students = response.json()
 print()
 
 absent_students = {}
-for i, student in zip(range(len(students)), students):
+for i, student in enumerate(students):
     if i % 50 == 0:
         print(f"Checking student attendance records ({i} so far)...")
 
@@ -29,18 +26,17 @@ for i, student in zip(range(len(students)), students):
         name = student["name"]
         absent_students[name] = classes_missed
 
-three_absences = {student: absences for student, absences in absent_students.items() if absences == 3}
-four_plus_absences = {student: absences for student, absences in absent_students.items() if absences >= 4}
-
 print()
 print("Here are all the students with three absences: ")
-for student, absences in three_absences.items():
-    print(f"    {student}: {absences}")
+for student, absences in absent_students.items():
+    if absences == 3:
+        print(f"    {student}: {absences}")
 
 print()
 print("Here are all the students with four or more absences: ")
-for student, absences in four_plus_absences.items():
-    print(f"    {student}: {absences}")
+for student, absences in absent_students.items():
+    if absences >= 4:
+        print(f"    {student}: {absences}")
 
 print()
 input("Press ENTER to quit.")

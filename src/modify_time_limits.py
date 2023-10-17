@@ -1,13 +1,6 @@
 """
 A command line script that automatically applies quiz/test time limit accomodations 
 for a given student in a given Canvas course.
-
-Imports from the following modules:
-
-* `canvasapi`: to access information from Canvas courses
-* `dotenv`: to load variables containing Canvas API information from an .env file
-* `dateutil`: to parse datetime strings denoting the start dates of Canvas courses
-* `os`: to collect the values of the environment variables in the .env file
 """
 import modules.cvutils as cvu
 

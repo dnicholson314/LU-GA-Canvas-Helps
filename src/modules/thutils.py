@@ -98,6 +98,7 @@ def prompt_user_for_th_student(course: dict[str], auth_header: dict[str, str]) -
         if students_len == 0:
             print("\nNo such student was found.")
             student_results = all_students
+            continue
         elif students_len == 1:
             student = student_results[0]
             print(f"You chose {student['name']}.")

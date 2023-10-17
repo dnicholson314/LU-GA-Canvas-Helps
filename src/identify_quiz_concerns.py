@@ -35,9 +35,9 @@ def find_quiz_concern_students(course):
     return quiz_concern_students
 
 def print_selected_students(quiz_concern_students):
-    for i, student in zip(range(len(quiz_concern_students)), quiz_concern_students.keys()):
-        selected = "*" if quiz_concern_students[student] else " "
-        print(f"{selected} {i+1}. {student.name}")
+    for i, (student, selected) in enumerate(quiz_concern_students.items()):
+        indicator = "*" if selected else " "
+        print(f"{indicator} {i+1}. {student.name}")
 
 def confirm_students_for_msg(quiz_concern_students):
     print(f"\nThe following students have missed {TOLERANCE} or more quizzes:")
