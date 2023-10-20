@@ -1,8 +1,5 @@
 import modules.cvutils as cvu
-
-CHUNK_SIZE = 20
-TOLERANCE = 3
-
+import modules.constants as cs
 canvas = cvu.create_canvas_object()
 course = cvu.prompt_for_course(canvas)
 print()
@@ -18,16 +15,16 @@ def find_quiz_concern_students(course):
 
     quiz_concern_students = {}
 
-    for i in range(0, len(student_ids), CHUNK_SIZE):
+    for i in range(0, len(student_ids), cs.CHUNK_SIZE):
         print(f"Checking students ({i} so far)...")
         
-        chunk = student_ids[i: i + CHUNK_SIZE]
+        chunk = student_ids[i: i + cs.CHUNK_SIZE]
         student_groups = course.get_multiple_submissions(student_ids = chunk, assignment_ids = quiz_ids, grouped = True)
 
         for student_group in student_groups:
             missed_assignments = [submission.missing for submission in student_group.submissions]
 
-            if missed_assignments.count(True) >= TOLERANCE:
+            if missed_assignments.count(True) >= cs.QUIZ_CONCERN_TOLERANCE:
                 submission = student_group.submissions[0]
                 student = course.get_user(submission.user_id)
                 quiz_concern_students[student] = False
@@ -40,7 +37,7 @@ def print_selected_students(quiz_concern_students):
         print(f"{indicator} {i+1}. {student.name}")
 
 def confirm_students_for_msg(quiz_concern_students):
-    print(f"\nThe following students have missed {TOLERANCE} or more quizzes:")
+    print(f"\nThe following students have missed {cs.QUIZ_CONCERN_TOLERANCE} or more quizzes:")
 
     while True:
         print_selected_students(quiz_concern_students)
