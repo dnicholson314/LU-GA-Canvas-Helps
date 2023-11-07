@@ -20,7 +20,7 @@ def get_absent_students(auth_header, course, tolerance):
         attendance_proportion = thu.get_th_attendance_proportion(records)
         classes_missed = attendance_proportion[1] - attendance_proportion[0]
     
-        if classes_missed >= tolerance - 1:
+        if classes_missed >= 1:
             name = student["name"]
             absent_students[name] = classes_missed
 
@@ -32,16 +32,18 @@ tolerance = int(input("Enter the max number of absences for the course (generall
 
 absent_students = get_absent_students(auth_header, course, tolerance)
 
+s = "s" if tolerance - 1 != 1 else ""
 print()
-print(f"Here are all the students with {tolerance - 1} absences: ")
+print(f"Here are all the students with {tolerance - 1} absence{s}: ")
 for student, absences in absent_students.items():
-    if absences == 3:
+    if absences == tolerance - 1:
         print(f"    {student}: {absences}")
 
+s = "s" if tolerance != 1 else ""
 print()
-print(f"Here are all the students with {tolerance} or more absences: ")
+print(f"Here are all the students with {tolerance} or more absence{s}: ")
 for student, absences in absent_students.items():
-    if absences >= 4:
+    if absences >= tolerance:
         print(f"    {student}: {absences}")
 
 print()
