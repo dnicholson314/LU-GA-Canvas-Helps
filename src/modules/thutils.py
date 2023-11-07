@@ -24,8 +24,7 @@ def get_auth_header_for_session() -> str:
 
     jwt_response = requests.post(jwt_url, json=jwt_data)
 
-    jwt_status_code = jwt_response.status_code
-    if jwt_status_code != 201:
+    if jwt_response.status_code != 201:
         raise ConnectionRefusedError("Unable to obtain JWT token")
 
     print("JWT bearer token obtained!")
