@@ -1,5 +1,8 @@
-import modules.cvutils as cvu
 import modules.constants as cs
+import modules.cvutils as cvu
+
+from itertools import batched
+
 canvas = cvu.create_canvas_object()
 course = cvu.prompt_for_course(canvas)
 print()
@@ -15,11 +18,9 @@ def find_quiz_concern_students(course):
 
     quiz_concern_students = {}
 
-    for i in range(0, len(student_ids), cs.CHUNK_SIZE):
-        print(f"Checking students ({i} so far)...")
-        
-        chunk = student_ids[i: i + cs.CHUNK_SIZE]
-        student_groups = course.get_multiple_submissions(student_ids = chunk, assignment_ids = quiz_ids, grouped = True)
+    for i, batch in enumerate(batched(student_ids, cs.CHUNK_SIZE)):
+        print(f"Checking students ({i * cs.CHUNK_SIZE} so far)...")
+        student_groups = course.get_multiple_submissions(student_ids = batch, assignment_ids = quiz_ids, grouped = True)
 
         for student_group in student_groups:
             missed_assignments = [submission.missing for submission in student_group.submissions]

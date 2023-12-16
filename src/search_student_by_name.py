@@ -70,7 +70,7 @@ while True:
         print()
         print(f"Your query returned {number_of_students} students.")
         print("Here are their names:\n")
-        for i, source in zip(range(len(sources)), sources):
+        for i, source in enumerate(sources):
             for student in source:
                 course = selected_courses[i]
                 print(f"    {student.name:25} ({course.name})")

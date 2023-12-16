@@ -18,7 +18,7 @@ def find_cv_student_from_lh_student(lh_student: dict) -> User | None:
         for index, cv_student in enumerate(cv_students, start=1):
             print(f"{index}. {cv_student.name}")
 
-        index = input(f"Enter the index of the student with LU id {luid}: ")
+        index = int(input(f"Enter the index of the student with LU id {luid}: "))
         return cv_students[index - 1]
     else:
         return cv_students[0]
@@ -31,7 +31,7 @@ course_sis_id, lh_auth_header = lhu.get_lh_auth_credentials_for_session(course, 
 all_students = lhu.get_lh_students(course_sis_id, lh_auth_header)
 
 for num_students, lh_student in enumerate(all_students, start=1):
-    name = f"{lh_student['firstName']} {lh_student['lastName']}"
+    name = f"{lh_student["firstName"]} {lh_student["lastName"]}"
 
     if lh_student["status"] == "REMOVED" or lh_student["attendance"] == "ATTENDED":
         print(f"Skipped {name}... ({num_students} processed so far)")
@@ -47,7 +47,7 @@ for num_students, lh_student in enumerate(all_students, start=1):
         print(f"No submissions for {name}... ({num_students} processed so far)")
         continue
 
-    attendance_url = f"https://lighthouse.okd.liberty.edu/rest/enrollments/{lh_student['id']}/attendance?courseSisId={course_sis_id}&sis=banner&lms=canvas_lu"
+    attendance_url = f"https://lighthouse.okd.liberty.edu/rest/enrollments/{lh_student["id"]}/attendance?courseSisId={course_sis_id}&sis=banner&lms=canvas_lu"
     payload = {
         "attendance": "ATTENDED"
     }
