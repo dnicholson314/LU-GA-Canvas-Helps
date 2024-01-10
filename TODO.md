@@ -9,7 +9,7 @@ Phase 1: Functionality
 * ✅ Top Hat integration
 * ✅ Lighthouse integration
 * Application to change attendance on the fly
-* Figure out the bug with incorrect dates for `modify_due_dates.py`
+* ❓ Figure out the bug with incorrect dates for `modify_due_dates.py` _(not sure what was being indicated here)_
 
 Phase 2: Generalizing processes
 -------------------------------
@@ -31,12 +31,14 @@ Phase 2: Generalizing processes
 Phase 3: Implementing GUI
 -------------------------
 
+* Encrypting sensitive information
+  * Encrypt LH API endpoints (to be especially careful since student information is at stake here)
 * Config application
   * Credentials
     * Get user's Canvas API key
     * Get user's TH jwt refresh token
     * Get user's LH login credentials (and save cookie)
-    * Save all of those to a .env file (consider encrypting)
+    * Save all of those to a .env file (and encrypt)
   * Classes
     * Unify Canvas/TH/LH student objects
     * Have user manually resolve discrepancies
@@ -46,6 +48,10 @@ Phase 3: Implementing GUI
     * Seconds to wait before retrying request
   * Logging for errors
     * Have a console in the app as well as a file that errors are put to
+* Application features
+  * Implement a routine update process (either on app open or every few hours)
+  * Implement Feedback API (upload console log)
+    * Every function that runs should print to console so that I can see the trace
 * Shell for application
   * Tkinter?
   * Textual?
