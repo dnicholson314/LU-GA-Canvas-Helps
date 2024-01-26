@@ -12,6 +12,7 @@ try:
     import identify_absent_students, identify_quiz_concerns, modify_due_dates, modify_time_limits, post_final_grades, search_student_by_name, update_attendance_verification
 except Exception as e:
     handle_exception(e)
+    quit()
 
 def process_choice(choice):
     match choice:
@@ -50,7 +51,7 @@ def main():
     while True:
         print()
         print(menu)
-        
+
         choice = 0
         while True:
             try:
