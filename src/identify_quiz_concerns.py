@@ -3,14 +3,8 @@ import _cvutils as cvu
 
 from itertools import batched
 
-canvas = cvu.create_canvas_object()
-course = cvu.prompt_for_course(canvas)
-print()
-name = input("Enter your name (this will go in the signature of the email): ")
-print()
-
-CONCERN_SUBJECT = f"Quiz concern - {course.name}"
-CONCERN_MESSAGE = f"Hello, I've noticed that you've missed multiple quizzes this semester. Make sure to keep up with the class announcements and modules in Canvas. There are two extra credit opportunities that can help you make up the points missed due at the end of the semester.\n\nLet me know if you have any questions!\n{name}"
+CONCERN_SUBJECT = ""
+CONCERN_MESSAGE = ""
 
 def find_quiz_concern_students(course):
     student_ids = [student.id for student in course.get_users(enrollment_type="student")]
@@ -60,7 +54,7 @@ def confirm_students_for_msg(quiz_concern_students):
         selected_student = list(quiz_concern_students)[selected_student_index]
         quiz_concern_students[selected_student] = not quiz_concern_students[selected_student]
 
-def send_msg(quiz_concern_students, course):
+def send_msg(quiz_concern_students, canvas, course):
     quiz_concern_students = confirm_students_for_msg(quiz_concern_students)
     print("------MESSAGE------")
     print()
@@ -80,10 +74,20 @@ def send_msg(quiz_concern_students, course):
                                context_code=f"course_{course.id}")
     print("Message sent!")
 
-quiz_concern_students = find_quiz_concern_students(course)
+def main():    
+    canvas = cvu.create_canvas_object()
+    course = cvu.prompt_for_course(canvas)
+    print()
+    name = input("Enter your name (this will go in the signature of the email): ")
+    print()
 
-if len(quiz_concern_students) == 0:
-    print("No students need quiz concern emails sent!")
-    input("Press ENTER to quit.")
-else:
-    send_msg(quiz_concern_students, course)
+    CONCERN_SUBJECT = f"Quiz concern - {course.name}"
+    CONCERN_MESSAGE = f"Hello, I've noticed that you've missed multiple quizzes this semester. Make sure to keep up with the class announcements and modules in Canvas. There are two extra credit opportunities that can help you make up the points missed due at the end of the semester.\n\nLet me know if you have any questions!\n{name}"
+
+    quiz_concern_students = find_quiz_concern_students(course)
+
+    if len(quiz_concern_students) == 0:
+        print("No students need quiz concern emails sent!")
+        input("Press ENTER to quit.")
+    else:
+        send_msg(quiz_concern_students, canvas, course)

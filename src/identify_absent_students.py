@@ -26,25 +26,26 @@ def get_absent_students(auth_header, course, tolerance):
 
     return absent_students
 
-auth_header = thu.get_auth_header_for_session()
-course = thu.prompt_user_for_th_course(auth_header)
-tolerance = int(input("Enter the max number of absences for the course (generally 4): "))
+def main():
+    auth_header = thu.get_auth_header_for_session()
+    course = thu.prompt_user_for_th_course(auth_header)
+    tolerance = int(input("Enter the max number of absences for the course (generally 4): "))
 
-absent_students = get_absent_students(auth_header, course, tolerance)
+    absent_students = get_absent_students(auth_header, course, tolerance)
 
-s = "s" if tolerance - 1 != 1 else ""
-print()
-print(f"Here are all the students with {tolerance - 1} absence{s}: ")
-for student, absences in absent_students.items():
-    if absences == tolerance - 1:
-        print(f"    {student}: {absences}")
+    s = "s" if tolerance - 1 != 1 else ""
+    print()
+    print(f"Here are all the students with {tolerance - 1} absence{s}: ")
+    for student, absences in absent_students.items():
+        if absences == tolerance - 1:
+            print(f"    {student}: {absences}")
 
-s = "s" if tolerance != 1 else ""
-print()
-print(f"Here are all the students with {tolerance} or more absence{s}: ")
-for student, absences in absent_students.items():
-    if absences >= tolerance:
-        print(f"    {student}: {absences}")
+    s = "s" if tolerance != 1 else ""
+    print()
+    print(f"Here are all the students with {tolerance} or more absence{s}: ")
+    for student, absences in absent_students.items():
+        if absences >= tolerance:
+            print(f"    {student}: {absences}")
 
-print()
-input("Press ENTER to quit.")
+    print()
+    input("Press ENTER to quit.")

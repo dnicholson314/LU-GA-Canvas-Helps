@@ -4,9 +4,6 @@ from dateutil.parser import parse
 from datetime import datetime
 from dateutil.parser._parser import ParserError
 
-canvas = cvu.create_canvas_object()
-course = cvu.prompt_for_course(canvas)
-
 def get_new_due_date() -> datetime:
     while True:
         try:
@@ -18,23 +15,27 @@ def get_new_due_date() -> datetime:
         except ParserError:
             print("Please enter a date in the proper format.")
 
-while True:
-    print()
-    student = cvu.prompt_for_student(course)
-    print()
-    assignment = cvu.prompt_for_assignment(course)
-    print()
+def main():
+    canvas = cvu.create_canvas_object()
+    course = cvu.prompt_for_course(canvas)
 
-    old_due_date = cvu.get_assignment_or_quiz_due_date(course, assignment)
-    submission = assignment.get_submission(user=student.id)
-    print(f"The current due date is {old_due_date}.")
+    while True:
+        print()
+        student = cvu.prompt_for_student(course)
+        print()
+        assignment = cvu.prompt_for_assignment(course)
+        print()
 
-    new_due_date = get_new_due_date()    
-    assignment.create_override(assignment_override={"student_ids": [student.id], "title": student.name, "due_at": new_due_date, "lock_at": new_due_date})
+        old_due_date = cvu.get_assignment_or_quiz_due_date(course, assignment)
+        submission = assignment.get_submission(user=student.id)
+        print(f"The current due date is {old_due_date}.")
 
-    print(f"Due date updated! The new due date is {new_due_date}.")
-    print()
+        new_due_date = get_new_due_date()    
+        assignment.create_override(assignment_override={"student_ids": [student.id], "title": student.name, "due_at": new_due_date, "lock_at": new_due_date})
 
-    keep_looping = input(f"Would you like to modify due dates for another student in {course.name}? (y/n): ")
-    if keep_looping != "y":
-        break
+        print(f"Due date updated! The new due date is {new_due_date}.")
+        print()
+
+        keep_looping = input(f"Would you like to modify due dates for another student in {course.name}? (y/n): ")
+        if keep_looping != "y":
+            break

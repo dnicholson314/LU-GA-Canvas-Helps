@@ -3,14 +3,6 @@ import _cvutils as cvu
 import requests
 import _constants as cs
 
-canvas = cvu.create_canvas_object()
-course = cvu.prompt_for_course(canvas)
-
-username, password = lhu.get_liberty_credentials_from_env_file()
-course_sis_id, lh_auth_header = lhu.get_lh_auth_credentials_for_session(course, username, password)
-
-students = lhu.get_lh_students(course_sis_id, lh_auth_header)
-
 def post_final_grade(course_sis_id, lh_auth_header, student, grade):
     if grade not in ["A", "B", "C", "D", "F"]:
         raise TypeError("Expected a letter grade (A, B, C, D, or F) for the grade parameter.")
@@ -33,43 +25,52 @@ def post_final_grade(course_sis_id, lh_auth_header, student, grade):
 
     return True
 
-for i, student in enumerate(students):
-    name = student["firstName"] + " " + student["lastName"]
+def main():
+    canvas = cvu.create_canvas_object()
+    course = cvu.prompt_for_course(canvas)
 
-    status = student["status"]
-    if status == "REMOVED":
-        print(f"Student {name} was removed from the course... ({i} so far)")
-        continue
+    username, password = lhu.get_liberty_credentials_from_env_file()
+    course_sis_id, lh_auth_header = lhu.get_lh_auth_credentials_for_session(course, username, password)
 
-    activity = student["daysSinceLastActivity"]
-    if activity >= 21:
-        print(f"Student {name} had 21 days of inactivity... ({i} so far)")
-        continue
+    students = lhu.get_lh_students(course_sis_id, lh_auth_header)
 
-    points = student["points"]
-    if points == 0:
-        print(f"Student {name} had 0 points... ({i} so far)")
-        continue
-    
-    grade = student["finalGrade"]
-    if grade:
-        print(f"Student {name} already has grade {grade} assigned... ({i} so far)")
-        continue
+    for i, student in enumerate(students):
+        name = student["firstName"] + " " + student["lastName"]
 
-    if points >= 895:
-        grade = "A"
-    elif points >= 795:
-        grade = "B"
-    elif points >= 695:
-        grade = "C"
-    elif points >= 595:
-        grade = "D"
-    else:
-        grade = "F"
+        status = student["status"]
+        if status == "REMOVED":
+            print(f"Student {name} was removed from the course... ({i} so far)")
+            continue
 
-    final_grade_posted = post_final_grade(course_sis_id, lh_auth_header, student, grade)
-    if not final_grade_posted:
-        print(f"Final grade failed to post for {student}... ({i} so far)")
-        continue
+        activity = student["daysSinceLastActivity"]
+        if activity >= 21:
+            print(f"Student {name} had 21 days of inactivity... ({i} so far)")
+            continue
 
-    print(f"Posted final grade {grade} for student {name} with {points} points... ({i} so far)")
+        points = student["points"]
+        if points == 0:
+            print(f"Student {name} had 0 points... ({i} so far)")
+            continue
+        
+        grade = student["finalGrade"]
+        if grade:
+            print(f"Student {name} already has grade {grade} assigned... ({i} so far)")
+            continue
+
+        if points >= 895:
+            grade = "A"
+        elif points >= 795:
+            grade = "B"
+        elif points >= 695:
+            grade = "C"
+        elif points >= 595:
+            grade = "D"
+        else:
+            grade = "F"
+
+        final_grade_posted = post_final_grade(course_sis_id, lh_auth_header, student, grade)
+        if not final_grade_posted:
+            print(f"Final grade failed to post for {student}... ({i} so far)")
+            continue
+
+        print(f"Posted final grade {grade} for student {name} with {points} points... ({i} so far)")

@@ -40,53 +40,54 @@ def take_student_query(sources):
         except BadRequest as e:
             cvu.process_bad_request(e)
 
-canvas = cvu.create_canvas_object()
-courses = cvu.get_courses_from_canvas_object(canvas)
+def main():
+    canvas = cvu.create_canvas_object()
+    courses = cvu.get_courses_from_canvas_object(canvas)
 
-init_courses = {course: False for course in courses}
-selected_courses_dict = confirm_courses_to_search(init_courses)
-selected_courses = [course for course in selected_courses_dict.keys() if selected_courses_dict[course]]
+    init_courses = {course: False for course in courses}
+    selected_courses_dict = confirm_courses_to_search(init_courses)
+    selected_courses = [course for course in selected_courses_dict.keys() if selected_courses_dict[course]]
 
-while True:
-    sources = selected_courses
     while True:
-        sources = take_student_query(sources)
-            
-        flattened_source = list(chain(*sources))
-        number_of_students = len(flattened_source)
+        sources = selected_courses
+        while True:
+            sources = take_student_query(sources)
+                
+            flattened_source = list(chain(*sources))
+            number_of_students = len(flattened_source)
 
-        if number_of_students == 0:
+            if number_of_students == 0:
+                print()
+                print("No such student was found.")
+                print()
+                sources = selected_courses
+                continue
+            elif number_of_students == 1:
+                student = flattened_source[0]
+                print()
+                print(f"You selected {student.name}.")
+                break
+
             print()
-            print("No such student was found.")
+            print(f"Your query returned {number_of_students} students.")
+            print("Here are their names:\n")
+            for i, source in enumerate(sources):
+                for student in source:
+                    course = selected_courses[i]
+                    print(f"    {student.name:25} ({course.name})")
             print()
-            sources = selected_courses
-            continue
-        elif number_of_students == 1:
-            student = flattened_source[0]
-            print()
-            print(f"You selected {student.name}.")
+        
+        name = student.name
+        index_of_course = sources.index([student])
+        course = selected_courses[index_of_course]
+        email = student.email
+
+        print()
+        print(f"Name: {name}")
+        print(f"Course: {course.name}")
+        print(f"Email: {email}")
+        print()
+
+        keep_looping = input(f"Would you like to keep looking for students in these courses? (y/n): ")
+        if cvu.sanitize_string(keep_looping) != "y":
             break
-
-        print()
-        print(f"Your query returned {number_of_students} students.")
-        print("Here are their names:\n")
-        for i, source in enumerate(sources):
-            for student in source:
-                course = selected_courses[i]
-                print(f"    {student.name:25} ({course.name})")
-        print()
-    
-    name = student.name
-    index_of_course = sources.index([student])
-    course = selected_courses[index_of_course]
-    email = student.email
-
-    print()
-    print(f"Name: {name}")
-    print(f"Course: {course.name}")
-    print(f"Email: {email}")
-    print()
-
-    keep_looping = input(f"Would you like to keep looking for students in these courses? (y/n): ")
-    if cvu.sanitize_string(keep_looping) != "y":
-        break
