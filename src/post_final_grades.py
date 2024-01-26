@@ -1,7 +1,7 @@
-import lhutils as lhu
-import cvutils as cvu
+import _lhutils as lhu
+import _cvutils as cvu
 import requests
-import constants as cs
+import _constants as cs
 
 canvas = cvu.create_canvas_object()
 course = cvu.prompt_for_course(canvas)

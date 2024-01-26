@@ -1,4 +1,4 @@
-import modules.cvutils as cvu
+import _cvutils as cvu
 
 from canvasapi.exceptions import BadRequest
 from itertools import chain

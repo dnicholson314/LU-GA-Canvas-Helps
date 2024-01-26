@@ -1,6 +1,6 @@
 import os
 
-import cvutils as cvu
+import _cvutils as cvu
 import dotenv as dv
 import requests
 

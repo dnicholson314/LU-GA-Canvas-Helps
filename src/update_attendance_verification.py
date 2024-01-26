@@ -1,6 +1,6 @@
-import modules.constants as cs
-import modules.cvutils as cvu
-import modules.lhutils as lhu
+import _constants as cs
+import _cvutils as cvu
+import _lhutils as lhu
 import requests
 from canvasapi.user import User
 

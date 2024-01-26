@@ -1,4 +1,4 @@
-import modules.cvutils as cvu
+import _cvutils as cvu
 
 from dateutil.parser import parse
 from datetime import datetime

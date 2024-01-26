@@ -1,6 +1,6 @@
 import requests
 
-import modules.thutils as thu
+import _thutils as thu
 
 def get_absent_students(auth_header, course, tolerance):
     course_id = course["course_id"]
