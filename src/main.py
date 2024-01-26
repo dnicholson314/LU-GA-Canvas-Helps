@@ -32,7 +32,7 @@ def process_choice(choice):
         case 999:
             quit()
         case _:
-            print("Please enter one of the options")
+            print("Please enter one of the options.")
 
 def main():
     menu = """\
@@ -48,17 +48,24 @@ def main():
     """
 
     while True:
+        print()
         print(menu)
+        
         choice = 0
-        try:
-            choice = int(input("Choose an option: "))
-        except ValueError:
-            print("Please enter a number.")
+        while True:
+            try:
+                choice = int(input("Choose an option: "))
+                break
+            except ValueError:
+                print("Please enter a number.")
         
         try:
             process_choice(choice)
         except Exception as e:
             handle_exception(e)
+        except KeyboardInterrupt:
+            print()
+            print("Application terminated.")
 
 if __name__ == "__main__":
     main()
