@@ -1,8 +1,6 @@
 import traceback as tb
 
-try:
-    import identify_absent_students, identify_quiz_concerns, modify_due_dates, modify_time_limits, post_final_grades, search_student_by_name, update_attendance_verification
-except Exception as e:
+def handle_exception(e):
     print()
     print("Encountered exception ----------------------------------")
     print(e.args[0])
@@ -10,17 +8,11 @@ except Exception as e:
     print("--------------------------------------------------------")
     input("Press ENTER to continue.")
 
-menu = """\
-Welcome to LUGACH! Please choose one of the following options:
-    (1) Identify Absent Students
-    (2) Identify Quiz Concerns
-    (3) Modify Due Dates
-    (4) Modify Time Limits
-    (5) Post Final Grades
-    (6) Search Student by Name
-    (7) Update Attendance Verification
-    (999) Quit application
-"""
+try:
+    import identify_absent_students, identify_quiz_concerns, modify_due_dates, modify_time_limits, post_final_grades, search_student_by_name, update_attendance_verification
+except Exception as e:
+    handle_exception(e)
+
 def process_choice(choice):
     match choice:
         case 1:
@@ -43,6 +35,18 @@ def process_choice(choice):
             print("Please enter one of the options")
 
 def main():
+    menu = """\
+    Welcome to LUGACH! Please choose one of the following options:
+        (1) Identify Absent Students
+        (2) Identify Quiz Concerns
+        (3) Modify Due Dates
+        (4) Modify Time Limits
+        (5) Post Final Grades
+        (6) Search Student by Name
+        (7) Update Attendance Verification
+        (999) Quit application
+    """
+
     while True:
         print(menu)
         choice = 0
@@ -54,12 +58,7 @@ def main():
         try:
             process_choice(choice)
         except Exception as e:
-            print()
-            print("Encountered exception ----------------------------------")
-            print(e.args[0])
-            tb.print_tb(e.__traceback__)
-            print("--------------------------------------------------------")
-            input("Press ENTER to continue.")
+            handle_exception(e)
 
 if __name__ == "__main__":
     main()
