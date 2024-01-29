@@ -38,13 +38,13 @@ def process_choice(choice):
 def main():
     menu = """\
     Welcome to LUGACH! Please choose one of the following options:
-        (1) Identify Absent Students
-        (2) Identify Quiz Concerns
-        (3) Modify Due Dates
-        (4) Modify Time Limits
-        (5) Post Final Grades
-        (6) Search Student by Name
-        (7) Update Attendance Verification
+          (1) Identify Absent Students
+          (2) Identify Quiz Concerns
+          (3) Modify Due Dates
+          (4) Modify Time Limits
+          (5) Post Final Grades
+          (6) Search Student by Name
+          (7) Update Attendance Verification
         (999) Quit application
     """
 
