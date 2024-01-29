@@ -9,7 +9,7 @@ def handle_exception(e):
     input("Press ENTER to continue.")
 
 try:
-    import identify_absent_students, identify_quiz_concerns, modify_due_dates, modify_time_limits, post_final_grades, search_student_by_name, update_attendance_verification
+    from lugach.apps import *
 except Exception as e:
     handle_exception(e)
     quit()

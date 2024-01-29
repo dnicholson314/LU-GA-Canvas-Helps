@@ -1,4 +1,4 @@
-import _cvutils as cvu
+import lugach.cvutils as cvu
 
 from dateutil.parser import parse
 from datetime import datetime

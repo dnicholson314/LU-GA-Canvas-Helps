@@ -2,7 +2,7 @@ import os
 
 import dotenv as dv
 import requests
-import _constants as cs
+import lugach.constants as cs
 
 from canvasapi.course import Course
 from selenium import webdriver

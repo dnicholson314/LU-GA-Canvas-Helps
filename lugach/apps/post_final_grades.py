@@ -1,7 +1,7 @@
-import _lhutils as lhu
-import _cvutils as cvu
+import lugach.lhutils as lhu
+import lugach.cvutils as cvu
 import requests
-import _constants as cs
+import lugach.constants as cs
 
 def post_final_grade(course_sis_id, lh_auth_header, student, grade):
     if grade not in ["A", "B", "C", "D", "F"]:

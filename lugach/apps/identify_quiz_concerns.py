@@ -1,5 +1,5 @@
-import _constants as cs
-import _cvutils as cvu
+import lugach.constants as cs
+import lugach.cvutils as cvu
 
 from itertools import batched
 

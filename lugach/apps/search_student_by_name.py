@@ -1,4 +1,4 @@
-import _cvutils as cvu
+import lugach.cvutils as cvu
 
 from canvasapi.exceptions import BadRequest
 from itertools import chain
@@ -6,8 +6,6 @@ from itertools import chain
 def print_selected_courses(selected_courses):
     for i, (course, selected) in enumerate(selected_courses.items()):
         indicator = "*" if selected else " "
-        if not course.start_at:
-            continue
         print(f"{indicator} {i+1}. {cvu.course_name_with_date(course)}")
 
 def confirm_courses_to_search(selected_courses):
@@ -27,7 +25,7 @@ def confirm_courses_to_search(selected_courses):
                 break
             except ValueError:
                 print("Expected 'q' or an index within range. Try again.")
-            
+
         selected_course = list(selected_courses)[selected_course_index]
         selected_courses[selected_course] = not selected_courses[selected_course]
 
@@ -44,7 +42,7 @@ def main():
     canvas = cvu.create_canvas_object()
     courses = cvu.get_courses_from_canvas_object(canvas)
 
-    init_courses = {course: False for course in courses}
+    init_courses = {course: False for course in courses if course.start_at}
     selected_courses_dict = confirm_courses_to_search(init_courses)
     selected_courses = [course for course in selected_courses_dict.keys() if selected_courses_dict[course]]
 
@@ -91,3 +89,6 @@ def main():
         keep_looping = input(f"Would you like to keep looking for students in these courses? (y/n): ")
         if cvu.sanitize_string(keep_looping) != "y":
             break
+
+if __name__ == "__main__":
+    main()

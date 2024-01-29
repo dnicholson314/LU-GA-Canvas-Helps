@@ -2,7 +2,7 @@
 A command line script that automatically applies quiz/test time limit accomodations 
 for a given student in a given Canvas course.
 """
-import _cvutils as cvu
+import lugach.cvutils as cvu
 
 def main():
     canvas = cvu.create_canvas_object()

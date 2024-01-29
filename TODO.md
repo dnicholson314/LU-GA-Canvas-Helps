@@ -9,7 +9,8 @@ Phase 1: Functionality
 * ✅ Top Hat integration
 * ✅ Lighthouse integration
 * Application to change attendance on the fly
-* ❓ Figure out the bug with incorrect dates for `modify_due_dates.py` _(not sure what was being indicated here)_
+* ~~Figure out the bug with incorrect dates for `modify_due_dates.py`~~ _(not sure what was being indicated here)_
+* ✅ Bug with search_student_by_name: when there are courses with no date the numbered list of courses skips numbers
 
 Phase 2: Generalizing processes
 -------------------------------

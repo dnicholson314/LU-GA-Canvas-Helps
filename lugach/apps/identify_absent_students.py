@@ -1,6 +1,6 @@
 import requests
 
-import _thutils as thu
+import lugach.thutils as thu
 
 def get_absent_students(auth_header, course, tolerance):
     course_id = course["course_id"]

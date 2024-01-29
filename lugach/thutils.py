@@ -1,6 +1,6 @@
 import os
 
-import _cvutils as cvu
+import lugach.cvutils as cvu
 import dotenv as dv
 import requests
 

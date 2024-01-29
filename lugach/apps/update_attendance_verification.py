@@ -1,6 +1,6 @@
-import _constants as cs
-import _cvutils as cvu
-import _lhutils as lhu
+import lugach.constants as cs
+import lugach.cvutils as cvu
+import lugach.lhutils as lhu
 import requests
 from canvasapi.user import User
 

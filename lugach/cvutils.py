@@ -11,7 +11,7 @@ from canvasapi.user import User
 from dateutil.parser import parse
 
 CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
-ROOT_DIR = f"{CURRENT_DIR}\..\.."
+ROOT_DIR = f"{CURRENT_DIR}\.."
 
 def printif(string: str, logging: bool) -> None:
     if logging:
