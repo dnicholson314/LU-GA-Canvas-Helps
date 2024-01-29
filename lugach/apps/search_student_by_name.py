@@ -89,6 +89,3 @@ def main():
         keep_looping = input(f"Would you like to keep looking for students in these courses? (y/n): ")
         if cvu.sanitize_string(keep_looping) != "y":
             break
-
-if __name__ == "__main__":
-    main()
