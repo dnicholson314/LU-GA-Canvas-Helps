@@ -9,7 +9,15 @@ def handle_exception(e):
     input("Press ENTER to continue.")
 
 try:
-    from lugach.apps import *
+    from lugach.apps import (
+        identify_absent_students,
+        identify_quiz_concerns,
+        modify_due_dates,
+        modify_time_limits,
+        post_final_grades,
+        search_student_by_name,
+        update_attendance_verification,
+    )
 except Exception as e:
     handle_exception(e)
     quit()
@@ -30,22 +38,22 @@ def process_choice(choice):
             search_student_by_name.main()
         case 7:
             update_attendance_verification.main()
-        case 999:
+        case 'q':
             quit()
         case _:
             print("Please enter one of the options.")
 
 def main():
+    
     menu = """\
-    Welcome to LUGACH! Please choose one of the following options:
-          (1) Identify Absent Students
-          (2) Identify Quiz Concerns
-          (3) Modify Due Dates
-          (4) Modify Time Limits
-          (5) Post Final Grades
-          (6) Search Student by Name
-          (7) Update Attendance Verification
-        (999) Quit application
+    Welcome to LUGACH! Please choose one of the following options (or 'q' to quit):
+        (1) Identify Absent Students
+        (2) Identify Quiz Concerns
+        (3) Modify Due Dates
+        (4) Modify Time Limits
+        (5) Post Final Grades
+        (6) Search Student by Name
+        (7) Update Attendance Verification
     """
 
     while True:
@@ -55,9 +63,12 @@ def main():
         choice = 0
         while True:
             try:
-                choice = int(input("Choose an option: "))
+                choice = input("Choose an option: ")
+                choice = int(choice)
                 break
             except ValueError:
+                if choice == 'q':
+                    break
                 print("Please enter a number.")
         
         try:

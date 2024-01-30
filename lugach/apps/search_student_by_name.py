@@ -50,7 +50,7 @@ def main():
         sources = selected_courses
         while True:
             sources = take_student_query(sources)
-                
+
             flattened_source = list(chain(*sources))
             number_of_students = len(flattened_source)
 
