@@ -8,12 +8,12 @@ import requests
 def get_th_auth_token_from_env_file() -> dict[str,str]:
     if not dv.find_dotenv():
         raise FileNotFoundError("No .env file was found.")
-    
+
     dv.load_dotenv()    
     TH_AUTH_KEY = os.getenv("TH_AUTH_KEY")
     if not TH_AUTH_KEY:
         raise NameError("Failed to load TH auth key from .env file.")
-    
+
     return TH_AUTH_KEY
 
 def get_auth_header_for_session() -> str:
@@ -61,7 +61,7 @@ def prompt_user_for_th_course(auth_header: dict[str, str]) -> dict[str]:
         print("The options are: ")
         for name in course_results.keys():
             print(f"    {name}")
-        
+
         query = input("Choose one of the above options: ")
         course_results = {name:course for name, course in course_results.items() if cvu.sanitize_string(query) in cvu.sanitize_string(name)}
 
@@ -125,7 +125,7 @@ def get_th_student_attendance_records(course: dict[str], student: dict["str"], a
             records.extend(payload["results"])
         if not payload["next"]:
             break
-        
+
         offset += limit
         attendance_url = f"https://app.tophat.com/api/gradebook/v1/gradeable_items/{course_id}/?limit={limit}&offset={offset}&student_ids={student_id}"
 
@@ -137,9 +137,9 @@ def get_th_attendance_proportion(records: list[dict]) -> tuple[int, int]:
                     and "attendance" in record["item_id"]]
     if len(main_records) != 1:
         raise NotImplementedError("The attendance records had an unexpected number (!= 1) of 'production...attendance' entries.")
-    
+
     main_record = main_records[0]
-    
+
     attended = main_record["weighted_correctness"]
     total = main_record["correctness_weight"]
 

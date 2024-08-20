@@ -1,4 +1,10 @@
 import traceback as tb
+import importlib
+from lugach import apps
+
+HEADER = """
+    Welcome to LUGACH! Please choose one of the following options (or 'q' to quit): \
+"""
 
 def handle_exception(e):
     print()
@@ -8,70 +14,46 @@ def handle_exception(e):
     print("--------------------------------------------------------")
     input("Press ENTER to continue.")
 
-try:
-    from lugach.apps import (
-        identify_absent_students,
-        identify_quiz_concerns,
-        modify_due_dates,
-        modify_time_limits,
-        post_final_grades,
-        search_student_by_name,
-        update_attendance_verification,
-    )
-except Exception as e:
-    handle_exception(e)
-    quit()
+def print_menu():
+    print(HEADER)
+    for i, app_name in enumerate(apps.__all__, start=1):
+        title = apps.title_from_app_name(app_name)
+        print(f"        ({i}) {title}")
+    print()
 
-def process_choice(choice):
-    match choice:
-        case 1:
-            identify_absent_students.main()
-        case 2:
-            identify_quiz_concerns.main()
-        case 3:
-            modify_due_dates.main()
-        case 4:
-            modify_time_limits.main()
-        case 5:
-            post_final_grades.main()
-        case 6:
-            search_student_by_name.main()
-        case 7:
-            update_attendance_verification.main()
-        case 'q':
-            quit()
-        case _:
-            print("Please enter one of the options.")
+def get_choice():
+    print_menu()
+
+    choice = 0
+    while True:
+        try:
+            choice = input("Choose an option: ")
+            choice = int(choice)
+            break
+        except ValueError:
+            if choice == 'q':
+                break
+            print("Please enter a number.")
+        except EOFError:
+            choice = 'q'
+            break
+
+    return choice
+
+def process_choice(choice: int):
+    try:
+        app_name = apps.__all__[choice - 1]
+        app = importlib.import_module(f"lugach.apps.{app_name}")
+        app.main()
+    except IndexError:
+        print("Please choose one of the listed options.")
 
 def main():
-    
-    menu = """\
-    Welcome to LUGACH! Please choose one of the following options (or 'q' to quit):
-        (1) Identify Absent Students
-        (2) Identify Quiz Concerns
-        (3) Modify Due Dates
-        (4) Modify Time Limits
-        (5) Post Final Grades
-        (6) Search Student by Name
-        (7) Update Attendance Verification
-    """
-
     while True:
-        print()
-        print(menu)
-
-        choice = 0
-        while True:
-            try:
-                choice = input("Choose an option: ")
-                choice = int(choice)
-                break
-            except ValueError:
-                if choice == 'q':
-                    break
-                print("Please enter a number.")
-        
         try:
+            choice = get_choice()
+            if choice == 'q':
+                break
             process_choice(choice)
         except Exception as e:
             handle_exception(e)

@@ -19,7 +19,7 @@ def get_absent_students(auth_header, course, tolerance):
         records = thu.get_th_student_attendance_records(course, student, auth_header)
         attendance_proportion = thu.get_th_attendance_proportion(records)
         classes_missed = attendance_proportion[1] - attendance_proportion[0]
-    
+
         if classes_missed >= 1:
             name = student["name"]
             absent_students[name] = classes_missed

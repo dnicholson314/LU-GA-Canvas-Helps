@@ -3,6 +3,13 @@ import lugach.cvutils as cvu
 import requests
 import lugach.constants as cs
 
+def get_grade_from_points(points):
+    for grade, _range in cs.GRADE_RANGES:
+        if points in _range:
+            return grade
+
+    return "F"
+
 def post_final_grade(course_sis_id, lh_auth_header, student, grade):
     if grade not in ["A", "B", "C", "D", "F"]:
         raise TypeError("Expected a letter grade (A, B, C, D, or F) for the grade parameter.")
@@ -25,15 +32,7 @@ def post_final_grade(course_sis_id, lh_auth_header, student, grade):
 
     return True
 
-def main():
-    canvas = cvu.create_canvas_object()
-    course = cvu.prompt_for_course(canvas)
-
-    username, password = lhu.get_liberty_credentials_from_env_file()
-    course_sis_id, lh_auth_header = lhu.get_lh_auth_credentials_for_session(course, username, password)
-
-    students = lhu.get_lh_students(course_sis_id, lh_auth_header)
-
+def post_final_grades(course_sis_id, lh_auth_header, students):
     for i, student in enumerate(students):
         name = student["firstName"] + " " + student["lastName"]
 
@@ -51,22 +50,13 @@ def main():
         if points == 0:
             print(f"Student {name} had 0 points... ({i} so far)")
             continue
-        
+
         grade = student["finalGrade"]
         if grade:
             print(f"Student {name} already has grade {grade} assigned... ({i} so far)")
             continue
-
-        if points >= 895:
-            grade = "A"
-        elif points >= 795:
-            grade = "B"
-        elif points >= 695:
-            grade = "C"
-        elif points >= 595:
-            grade = "D"
         else:
-            grade = "F"
+            grade = get_grade_from_points(points)
 
         final_grade_posted = post_final_grade(course_sis_id, lh_auth_header, student, grade)
         if not final_grade_posted:
@@ -74,3 +64,14 @@ def main():
             continue
 
         print(f"Posted final grade {grade} for student {name} with {points} points... ({i} so far)")
+
+def main():
+    canvas = cvu.create_canvas_object()
+    course = cvu.prompt_for_course(canvas)
+
+    username, password = lhu.get_liberty_credentials_from_env_file()
+    course_sis_id, lh_auth_header = lhu.get_lh_auth_credentials_for_session(course, username, password)
+
+    students = lhu.get_lh_students(course_sis_id, lh_auth_header)
+
+    post_final_grades(course_sis_id, lh_auth_header, students)
