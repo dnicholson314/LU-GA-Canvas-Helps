@@ -74,7 +74,7 @@ def prompt_user_for_th_course(auth_header: dict[str, str]) -> dict[str]:
             print(f"You chose {name}.")
             return course
 
-def get_th_students(auth_header: dict[str, str], course:dict[str]) -> list[dict]:
+def get_th_students(auth_header: dict[str, str], course: dict[str]) -> list[dict]:
     course_id = course["course_id"]
     students_url = f"https://app.tophat.com/api/v3/course/{course_id}/students/"
 
@@ -109,38 +109,13 @@ def prompt_user_for_th_student(course: dict[str], auth_header: dict[str, str]) -
             print(f"    {student['name']}")
         print()
 
-def get_th_student_attendance_records(course: dict[str], student: dict["str"], auth_header: dict[str, str], limit=2000) -> list[dict[str]]:
+def get_th_attendance_proportion(course: dict[str], student: dict[str], auth_header: dict[str, str]) -> tuple[int, int]:
     course_id = course["course_id"]
-    student_id = student["id"]
-    offset = 0
+    metadata_url = f"https://app.tophat.com/api/gradebook/v1/gradeable_items/{course_id}/student/{student["id"]}/metadata/"
+    response = requests.get(url=metadata_url, headers=auth_header)
+    metadata = response.json()
 
-    init_attendance_url = f"https://app.tophat.com/api/gradebook/v1/gradeable_items/{course_id}/?limit={limit}&offset={offset}&student_ids={student_id}"
-    attendance_url = init_attendance_url
-    records = []
-    while True:
-        response = requests.get(url=attendance_url, headers=auth_header)
-        payload = response.json()
-
-        if payload["results"]:
-            records.extend(payload["results"])
-        if not payload["next"]:
-            break
-
-        offset += limit
-        attendance_url = f"https://app.tophat.com/api/gradebook/v1/gradeable_items/{course_id}/?limit={limit}&offset={offset}&student_ids={student_id}"
-
-    return records
-
-def get_th_attendance_proportion(records: list[dict]) -> tuple[int, int]:
-    main_records = [record for record in records 
-                    if "production" in record["item_id"]
-                    and "attendance" in record["item_id"]]
-    if len(main_records) != 1:
-        raise NotImplementedError("The attendance records had an unexpected number (!= 1) of 'production...attendance' entries.")
-
-    main_record = main_records[0]
-
-    attended = main_record["weighted_correctness"]
-    total = main_record["correctness_weight"]
+    attended = metadata['attended_count']
+    total = metadata['attendance_count']
 
     return (attended, total)

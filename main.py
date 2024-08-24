@@ -53,6 +53,7 @@ def main():
         try:
             choice = get_choice()
             if choice == 'q':
+                print("Application terminated.")
                 break
             process_choice(choice)
         except Exception as e:
@@ -60,6 +61,7 @@ def main():
         except KeyboardInterrupt:
             print()
             print("Application terminated.")
+            break
 
 if __name__ == "__main__":
     main()

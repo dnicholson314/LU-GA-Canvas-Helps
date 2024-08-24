@@ -16,9 +16,8 @@ def get_absent_students(auth_header, course, tolerance):
         if i % 50 == 0:
             print(f"Checking student attendance records ({i} so far)...")
 
-        records = thu.get_th_student_attendance_records(course, student, auth_header)
-        attendance_proportion = thu.get_th_attendance_proportion(records)
-        classes_missed = attendance_proportion[1] - attendance_proportion[0]
+        (attended, total) = thu.get_th_attendance_proportion(course, student, auth_header)
+        classes_missed = attended - total
 
         if classes_missed >= 1:
             name = student["name"]
