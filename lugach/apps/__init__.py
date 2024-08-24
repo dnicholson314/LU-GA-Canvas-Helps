@@ -6,6 +6,7 @@ __all__ = [
     "post_final_grades",
     "search_student_by_name",
     "update_attendance_verification",
+    "modify_attendance"
 ]
 
 def title_from_app_name(app_name: str) -> str:
