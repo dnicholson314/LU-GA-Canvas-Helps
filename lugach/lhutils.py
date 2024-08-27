@@ -14,7 +14,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 def get_liberty_credentials_from_env_file() -> tuple[str, str]:
     if not dv.find_dotenv():
         raise FileNotFoundError("No .env file was found.")
-    
+
     dv.load_dotenv()
 
     username = os.getenv("LIBERTY_USERNAME")

@@ -74,4 +74,8 @@ def main():
 
     students = lhu.get_lh_students(course_sis_id, lh_auth_header)
 
+    continue_to_post_grades = input(f"Post grades for {course["course_name"]} (y/n)? ")
+    if continue_to_post_grades != "y":
+        return
+
     post_final_grades(course_sis_id, lh_auth_header, students)

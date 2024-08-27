@@ -31,6 +31,10 @@ def main():
     course_sis_id, lh_auth_header = lhu.get_lh_auth_credentials_for_session(course, username, password)
     all_students = lhu.get_lh_students(course_sis_id, lh_auth_header)
 
+    continue_to_update_attendance_verification = input(f"Update attendance verification for {course["course_name"]} (y/n)? ")
+    if continue_to_update_attendance_verification != "y":
+        return
+
     for num_students, lh_student in enumerate(all_students, start=1):
         name = f"{lh_student["firstName"]} {lh_student["lastName"]}"
 

@@ -27,10 +27,9 @@ def main():
         print()
 
         old_due_date = cvu.get_assignment_or_quiz_due_date(course, assignment)
-        submission = assignment.get_submission(user=student.id)
         print(f"The current due date is {old_due_date}.")
 
-        new_due_date = get_new_due_date()    
+        new_due_date = get_new_due_date()
         assignment.create_override(assignment_override={"student_ids": [student.id], "title": student.name, "due_at": new_due_date, "lock_at": new_due_date})
 
         print(f"Due date updated! The new due date is {new_due_date}.")

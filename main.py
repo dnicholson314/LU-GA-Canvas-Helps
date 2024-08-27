@@ -9,7 +9,7 @@ HEADER = """
 def handle_exception(e):
     print()
     print("Encountered exception ----------------------------------")
-    print(e.args[0])
+    print(*e.args)
     tb.print_tb(e.__traceback__)
     print("--------------------------------------------------------")
     input("Press ENTER to continue.")
@@ -34,7 +34,7 @@ def get_choice():
             if choice == 'q':
                 break
             print("Please enter a number.")
-        except EOFError:
+        except (KeyboardInterrupt, EOFError):
             choice = 'q'
             break
 
@@ -56,12 +56,11 @@ def main():
                 print("Application terminated.")
                 break
             process_choice(choice)
-        except Exception as e:
-            handle_exception(e)
-        except KeyboardInterrupt:
+        except (KeyboardInterrupt, EOFError):
             print()
             print("Application terminated.")
-            break
+        except Exception as e:
+            handle_exception(e)
 
 if __name__ == "__main__":
     main()

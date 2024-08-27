@@ -8,7 +8,7 @@ Phase 1: Functionality
 * ✅ Update .env handling to allow for TH integration
 * ✅ Top Hat integration
 * ✅ Lighthouse integration
-* Application to change attendance on the fly
+* ✅ Application to change attendance on the fly
 * ✅ Bug with search_student_by_name: when there are courses with no date the numbered list of courses skips numbers
 
 Phase 2: Generalizing processes
