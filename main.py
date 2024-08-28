@@ -1,5 +1,4 @@
 import traceback as tb
-import importlib
 from lugach import apps
 
 HEADER = """
@@ -43,8 +42,7 @@ def get_choice():
 def process_choice(choice: int):
     try:
         app_name = apps.__all__[choice - 1]
-        app = importlib.import_module(f"lugach.apps.{app_name}")
-        app.main()
+        apps.run_app_from_app_name(app_name)
     except IndexError:
         print("Please choose one of the listed options.")
 

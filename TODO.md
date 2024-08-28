@@ -2,15 +2,6 @@
 To-do List
 ==========
 
-Phase 1: Functionality
-----------------------
-
-* ✅ Update .env handling to allow for TH integration
-* ✅ Top Hat integration
-* ✅ Lighthouse integration
-* ✅ Application to change attendance on the fly
-* ✅ Bug with search_student_by_name: when there are courses with no date the numbered list of courses skips numbers
-
 Phase 2: Generalizing processes
 -------------------------------
 
@@ -32,7 +23,7 @@ Phase 3: Implementing GUI
 -------------------------
 
 * Encrypting sensitive information
-  * Encrypt LH API endpoints (to be especially careful since student information is at stake here)
+  * ~~Encrypt LH API endpoints (to be especially careful since student information is at stake here)~~
 * Config application
   * Credentials
     * Get user's Canvas API key
