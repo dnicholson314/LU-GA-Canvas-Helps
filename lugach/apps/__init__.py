@@ -1,4 +1,5 @@
 __all__ = [
+    "setup",
     "identify_absent_students",
     "identify_quiz_concerns",
     "modify_due_dates",
