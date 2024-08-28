@@ -51,6 +51,19 @@ def get_th_courses(auth_header):
 
     return courses
 
+def update_env_file_with_th_auth_token():
+    while True:
+        try:
+            auth_header = get_auth_header_for_session()
+            return
+        except FileNotFoundError as e:
+            print(e)
+            cvu._create_env_file()
+        except (NameError, ConnectionRefusedError) as e:
+            print(e)
+            th_auth_key = input("Enter the auth key from Top Hat: ")
+            cvu._update_env_file(TH_AUTH_KEY=th_auth_key)
+
 def prompt_user_for_th_course(auth_header: dict[str, str]) -> dict[str]:
     raw_courses = get_th_courses(auth_header)
     courses_dict = {}

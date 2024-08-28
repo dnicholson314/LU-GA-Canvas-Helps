@@ -1,29 +1,65 @@
 import os
 
 import dotenv as dv
+import keyring
 import requests
 import lugach.constants as cs
+import lugach.cvutils as cvu
 
 from canvasapi.course import Course
+
+from getpass import getpass
+
 from selenium import webdriver
 from selenium.common.exceptions import (StaleElementReferenceException,
                                         TimeoutException)
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 
-def get_liberty_credentials_from_env_file() -> tuple[str, str]:
+LUGACH_KEYRING_KEY = "LUGACH"
+
+def set_liberty_credentials(username: str, password: str):
+    if not dv.find_dotenv():
+        raise FileNotFoundError("No .env file was found.")
+
+    cvu._update_env_file(LIBERTY_USERNAME=username)
+    keyring.set_password(LUGACH_KEYRING_KEY, username, password)
+
+def get_liberty_credentials() -> tuple[str, str]:
     if not dv.find_dotenv():
         raise FileNotFoundError("No .env file was found.")
 
     dv.load_dotenv()
 
     username = os.getenv("LIBERTY_USERNAME")
-    password = os.getenv("LIBERTY_PASSWORD")
+    if not username:
+        raise NameError("Failed to load Liberty username from .env file.")
 
-    if not username or not password:
-        raise NameError("Failed to load Liberty credentials from .env file.")
+    password = keyring.get_password(LUGACH_KEYRING_KEY, username)
+    if not password:
+        raise PermissionError("Failed to load Liberty password from system keyring.")
 
     return username, password
+
+def prompt_user_for_liberty_credentials():
+    while True:
+        try:
+            get_liberty_credentials()
+            print("Liberty credentials provided!")
+
+            should_update_liberty_credentials = input("Would you like to update them (y/n)? ")
+            if should_update_liberty_credentials == 'y':
+                raise PermissionError("User asked to update their credentials.")
+
+            return
+        except FileNotFoundError as e:
+            print(e)
+            cvu._create_env_file()
+        except (NameError, PermissionError) as e:
+            print(e)
+            username = input("Enter your Liberty username: ")
+            password = getpass("Enter your Liberty password: ")
+            set_liberty_credentials(username=username, password=password)
 
 def get_lh_auth_credentials_for_session(course: Course, liberty_username: str, liberty_password: str) -> tuple[str, dict[str, str]]:
     course_id = course.id

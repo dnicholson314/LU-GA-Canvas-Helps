@@ -25,7 +25,7 @@ def find_cv_student_from_lh_student(course, lh_student: dict) -> User | None:
 
 def main():
     username, password = lhu.get_liberty_credentials_from_env_file()
-    canvas = cvu.get_canvas_object_from_env_file()
+    canvas = cvu.create_canvas_object()
     course = cvu.prompt_for_course(canvas)
 
     course_sis_id, lh_auth_header = lhu.get_lh_auth_credentials_for_session(course, username, password)

@@ -11,7 +11,7 @@ def main():
     while True:
         print()
         student = cvu.prompt_for_student(course)
-        
+
         print()
         while True:
             try:

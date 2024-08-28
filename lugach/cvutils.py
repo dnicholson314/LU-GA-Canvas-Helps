@@ -58,14 +58,14 @@ def match_course(query: str, course: Course) -> bool:
 
     return sanitized_query in sanitized_course_name_with_date
 
-def create_env_file(path=ROOT_DIR) -> bool:
+def _create_env_file(path=ROOT_DIR) -> bool:
     try:
-        with open(f"{path}\.env", "w") as env_file:
+        with open(f"{path}\.env", "w"):
             return True
     except OSError as e:
         raise OSError("Fatal error: failed to create new .env file.") from e
 
-def update_env_file(**kwargs: str) -> bool:
+def _update_env_file(**kwargs: str) -> bool:
     try:
         path = dv.find_dotenv(raise_error_if_not_found=True)
         for key, value in kwargs.items():
@@ -74,11 +74,11 @@ def update_env_file(**kwargs: str) -> bool:
     except IOError as e:
         raise IOError("Fatal error: did not find .env file.") from e
 
-def get_canvas_object_from_env_file() -> Canvas:
+def _get_canvas_object_from_env_file() -> Canvas:
     if not dv.find_dotenv():
         raise FileNotFoundError("No .env file was found.")
-    
-    dv.load_dotenv()    
+
+    dv.load_dotenv()
     API_URL = os.getenv("CANVAS_API_URL")
     API_KEY = os.getenv("CANVAS_API_KEY")
     if not API_URL or not API_KEY:
@@ -89,21 +89,22 @@ def get_canvas_object_from_env_file() -> Canvas:
         canvas.get_courses()[0]
     except InvalidAccessToken as e:
         raise InvalidAccessToken("You entered an invalid API key in the .env file.") from e
-    
+
     return canvas
 
 def create_canvas_object() -> Canvas:
     while True:
         try:
-            canvas = get_canvas_object_from_env_file()
+            canvas = _get_canvas_object_from_env_file()
+            print("Canvas API key found!")
             return canvas
         except FileNotFoundError as e:
             print(e)
-            create_env_file()
+            _create_env_file()
         except (NameError, InvalidAccessToken) as e:
             print(e)
             api_key = input("Enter your API key from Canvas: ")
-            update_env_file(CANVAS_API_URL="https://canvas.liberty.edu", CANVAS_API_KEY=api_key)
+            _update_env_file(CANVAS_API_URL="https://canvas.liberty.edu", CANVAS_API_KEY=api_key)
 
 def get_courses_from_canvas_object(canvas: Canvas, logging = True, enrolled_as = "designer", **kwargs) -> list[Course]:
     printif("Loading courses from Canvas...", logging)
