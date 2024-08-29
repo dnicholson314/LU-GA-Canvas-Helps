@@ -12,10 +12,11 @@ class AttendanceOptions(Enum):
     EXCUSED = 2
 
 def get_th_auth_token_from_env_file() -> dict[str,str]:
-    if not dv.find_dotenv():
+    path = dv.find_dotenv(filename="_.env")
+    if not path:
         raise FileNotFoundError("No .env file was found.")
 
-    dv.load_dotenv()    
+    dv.load_dotenv(dotenv_path=path)
     TH_AUTH_KEY = os.getenv("TH_AUTH_KEY")
     if not TH_AUTH_KEY:
         raise NameError("Failed to load TH auth key from .env file.")

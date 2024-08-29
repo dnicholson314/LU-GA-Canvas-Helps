@@ -10,8 +10,6 @@ from canvasapi.quiz import Quiz
 from canvasapi.user import User
 from dateutil.parser import parse
 
-CURRENT_DIR = os.path.dirname(os.path.realpath(__file__))
-ROOT_DIR = f"{CURRENT_DIR}\.."
 
 def printif(string: str, logging: bool) -> None:
     if logging:
@@ -58,16 +56,16 @@ def match_course(query: str, course: Course) -> bool:
 
     return sanitized_query in sanitized_course_name_with_date
 
-def _create_env_file(path=ROOT_DIR) -> bool:
+def _create_env_file() -> bool:
     try:
-        with open(f"{path}\.env", "w"):
+        with open(f"_.env", "w"):
             return True
     except OSError as e:
         raise OSError("Fatal error: failed to create new .env file.") from e
 
 def _update_env_file(**kwargs: str) -> bool:
     try:
-        path = dv.find_dotenv(raise_error_if_not_found=True)
+        path = dv.find_dotenv(filename="_.env", raise_error_if_not_found=True)
         for key, value in kwargs.items():
             dv.set_key(dotenv_path=path,key_to_set=key, value_to_set=value)
         return True
@@ -75,10 +73,11 @@ def _update_env_file(**kwargs: str) -> bool:
         raise IOError("Fatal error: did not find .env file.") from e
 
 def _get_canvas_object_from_env_file() -> Canvas:
-    if not dv.find_dotenv():
+    path = dv.find_dotenv(filename="_.env")
+    if not path:
         raise FileNotFoundError("No .env file was found.")
 
-    dv.load_dotenv()
+    dv.load_dotenv(dotenv_path=path)
     API_URL = os.getenv("CANVAS_API_URL")
     API_KEY = os.getenv("CANVAS_API_KEY")
     if not API_URL or not API_KEY:

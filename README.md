@@ -33,7 +33,8 @@ environment to reduce the chances for bugs. Within the working directory, then..
 
 ```bash
 python -m venv .venv # Create a virtual environment (recommended)
-python -m pip install -r requirements.txt
+.\.venv\Scripts\activate # Run the virtual environment
+python -m pip install -r requirements.txt # Install packages
 ```
 
 Lastly, once all the modules are installed, you can run the project using
