@@ -3,11 +3,7 @@ import requests
 import lugach.thutils as thu
 
 def get_absent_students(auth_header, course, tolerance):
-    course_id = course["course_id"]
-
-    students_url = f"https://app.tophat.com/api/v3/course/{course_id}/students/"
-    response = requests.get(url=students_url, headers=auth_header)
-    students = response.json()
+    students = thu.get_th_students(auth_header, course)
 
     print()
 
@@ -17,9 +13,9 @@ def get_absent_students(auth_header, course, tolerance):
             print(f"Checking student attendance records ({i} so far)...")
 
         (attended, total) = thu.get_th_attendance_proportion(course, student, auth_header)
-        classes_missed = attended - total
+        classes_missed = total - attended
 
-        if classes_missed >= 1:
+        if classes_missed >= tolerance - 1:
             name = student["name"]
             absent_students[name] = classes_missed
 
