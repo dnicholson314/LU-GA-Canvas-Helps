@@ -2,45 +2,54 @@ import requests
 
 import lugach.thutils as thu
 
-def get_absent_students(auth_header, course, tolerance):
+def _find_student_by_id(students: dict, desired_student_id: int) -> dict:
+    for student in students:
+        current_student_id = student["id"]
+        if desired_student_id == current_student_id:
+            return student
+
+def get_tolerance_groups(auth_header, course, tolerance) -> tuple[dict, dict]:
     students = thu.get_th_students(auth_header, course)
+    attendance_proportions = thu.get_all_th_attendance_proportions_for_course(course, auth_header)
 
-    print()
-
-    absent_students = {}
-    for i, student in enumerate(students):
-        if i % 50 == 0:
-            print(f"Checking student attendance records ({i} so far)...")
-
-        (attended, total) = thu.get_th_attendance_proportion(course, student, auth_header)
+    students_under_tolerance = {}
+    students_at_tolerance = {}
+    for student_id, (attended, total) in attendance_proportions.items():
         classes_missed = total - attended
+        if classes_missed < tolerance - 1:
+            continue
 
-        if classes_missed >= tolerance - 1:
-            name = student["name"]
-            absent_students[name] = classes_missed
+        student = _find_student_by_id(students, student_id)
+        if not student:
+            print(f"Could not find student with id {student_id}")
+            continue
 
-    return absent_students
+        name = student["name"]
+        if classes_missed == tolerance - 1:
+            students_under_tolerance[name] = classes_missed
+        else:
+            students_at_tolerance[name] = classes_missed
+
+    return (students_under_tolerance, students_at_tolerance)
 
 def main():
     auth_header = thu.get_auth_header_for_session()
     course = thu.prompt_user_for_th_course(auth_header)
     tolerance = int(input("Enter the max number of absences for the course (generally 4): "))
 
-    absent_students = get_absent_students(auth_header, course, tolerance)
+    students_under_tolerance, students_at_tolerance = get_tolerance_groups(auth_header, course, tolerance)
 
-    s = "s" if tolerance - 1 != 1 else ""
+    s = "" if tolerance - 1 == 1 else "s"
     print()
     print(f"Here are all the students with {tolerance - 1} absence{s}: ")
-    for student, absences in absent_students.items():
-        if absences == tolerance - 1:
-            print(f"    {student}: {absences}")
+    for student, absences in students_under_tolerance.items():
+        print(f"    {student}: {absences}")
 
-    s = "s" if tolerance != 1 else ""
+    s = "" if tolerance == 1 else "s"
     print()
     print(f"Here are all the students with {tolerance} or more absence{s}: ")
-    for student, absences in absent_students.items():
-        if absences >= tolerance:
-            print(f"    {student}: {absences}")
+    for student, absences in students_at_tolerance.items():
+        print(f"    {student}: {absences}")
 
     print()
     input("Press ENTER to quit.")

@@ -55,7 +55,7 @@ def get_th_courses(auth_header):
 def update_env_file_with_th_auth_token():
     while True:
         try:
-            auth_header = get_auth_header_for_session()
+            get_auth_header_for_session()
             return
         except FileNotFoundError as e:
             print(e)
@@ -129,7 +129,32 @@ def prompt_user_for_th_student(course: dict[str], auth_header: dict[str, str]) -
             print(f"    {student['name']}")
         print()
 
-def get_th_attendance_proportion(course: dict[str], student: dict[str], auth_header: dict[str, str]) -> tuple[int, int]:
+def get_all_th_attendance_proportions_for_course(course: dict[str], auth_header: dict) -> dict[int, tuple]:
+    course_id = course["course_id"]
+    gradeable_items_url = f"https://app.tophat.com/api/gradebook/v1/gradeable_items/{course_id}/?limit=2000"
+
+    attendance_proportions = {}
+    while True:
+        response = requests.get(url=gradeable_items_url, headers=auth_header)
+        gradeable_items = response.json()
+
+        for result in gradeable_items["results"]:
+            if "attendance" not in result["item_id"]:
+                continue
+
+            student_id = result["student_id"]
+            attended = result["weighted_correctness"]
+            total = result["correctness_weight"]
+
+            attendance_proportions[student_id] = (attended, total)
+
+        if not gradeable_items["next"]:
+            break
+        gradeable_items_url = gradeable_items["next"]
+
+    return attendance_proportions
+
+def get_th_attendance_proportion_for_student(course: dict[str], student: dict[str], auth_header: dict[str, str]) -> tuple[int, int]:
     course_id = course["course_id"]
     metadata_url = f"https://app.tophat.com/api/gradebook/v1/gradeable_items/{course_id}/student/{student["id"]}/metadata/"
     response = requests.get(url=metadata_url, headers=auth_header)
@@ -141,8 +166,6 @@ def get_th_attendance_proportion(course: dict[str], student: dict[str], auth_hea
     return (attended, total)
 
 def _get_th_attendance_item_names_and_ids(course: dict[str], auth_header: dict[str, str]) -> list[tuple[str, int]]:
-    """
-    """
     course_id = course["course_id"]
     course_item_url = f"https://app.tophat.com/api/v3/course/{course_id}/gradeable_course_items_aggregated/"
     response = requests.get(url=course_item_url, headers=auth_header)
