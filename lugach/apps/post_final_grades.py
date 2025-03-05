@@ -3,6 +3,16 @@ import lugach.cvutils as cvu
 import requests
 import lugach.constants as cs
 
+WARNING_MESSAGE = """\
+    ▲ WARNING: THIS PROGRAM WILL POST FINAL GRADES FOR 
+    THE CLASS THAT YOU SELECT! ▲
+
+    Please make sure that you have permission to post
+    final grades before continuing.
+
+    Do you want to continue (y/n)? \
+"""
+
 def get_grade_from_points(points):
     for grade, _range in cs.GRADE_RANGES:
         if points in _range:
@@ -66,10 +76,14 @@ def post_final_grades(course_sis_id, lh_auth_header, students):
         print(f"Posted final grade {grade} for student {name} with {points} points... ({i} so far)")
 
 def main():
+    start_application = input(WARNING_MESSAGE)
+    if start_application != "y":
+        return
+
     canvas = cvu.create_canvas_object()
     course = cvu.prompt_for_course(canvas)
 
-    username, password = lhu.get_liberty_credentials_from_env_file()
+    username, password = lhu.get_liberty_credentials()
     course_sis_id, lh_auth_header = lhu.get_lh_auth_credentials_for_session(course, username, password)
 
     students = lhu.get_lh_students(course_sis_id, lh_auth_header)

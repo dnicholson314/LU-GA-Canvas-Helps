@@ -12,9 +12,10 @@ class AttendanceOptions(Enum):
     EXCUSED = 2
 
 def get_th_auth_token_from_env_file() -> dict[str,str]:
-    path = dv.find_dotenv(filename="_.env")
-    if not path:
-        raise FileNotFoundError("No .env file was found.")
+    try:
+        path = dv.find_dotenv(raise_error_if_not_found=True)
+    except IOError as e:
+        raise FileNotFoundError("No .env file was found.") from e
 
     dv.load_dotenv(dotenv_path=path)
     TH_AUTH_KEY = os.getenv("TH_AUTH_KEY")
@@ -23,7 +24,7 @@ def get_th_auth_token_from_env_file() -> dict[str,str]:
 
     return TH_AUTH_KEY
 
-def get_auth_header_for_session() -> str:
+def get_auth_header_for_session() -> dict[str, str]:
     jwt_url = 'https://app.tophat.com/identity/v1/refresh_jwt/'
     jwt_data = {
         "th_jwt_refresh": get_th_auth_token_from_env_file(),

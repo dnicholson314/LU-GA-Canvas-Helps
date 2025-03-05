@@ -14,9 +14,9 @@ import importlib
 
 def lint_app_name(app_name: str) -> bool:
     if type(app_name) is not str:
-        raise TypeError("Expected a string for the app name.")
+        raise TypeError(f"Expected a string for the app name: {app_name}.")
     if app_name not in __all__:
-        raise ValueError("The app name given was not found in __all__.")
+        raise ValueError(f"The app name given ({app_name}) was not found in __all__.")
 
     return True
 

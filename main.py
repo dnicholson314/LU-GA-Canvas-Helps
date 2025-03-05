@@ -42,21 +42,23 @@ def get_choice():
 def process_choice(choice: int):
     try:
         app_name = apps.__all__[choice - 1]
-        apps.run_app_from_app_name(app_name)
     except IndexError:
         print("Please choose one of the listed options.")
+
+    try:
+        apps.run_app_from_app_name(app_name)
+    except (KeyboardInterrupt, EOFError):
+        print()
+        print("Application terminated.")
 
 def main():
     while True:
         try:
             choice = get_choice()
             if choice == 'q':
-                print("Application terminated.")
+                print("Goodbye!")
                 break
             process_choice(choice)
-        except (KeyboardInterrupt, EOFError):
-            print()
-            print("Application terminated.")
         except Exception as e:
             handle_exception(e)
 

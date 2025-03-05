@@ -10,11 +10,6 @@ from canvasapi.quiz import Quiz
 from canvasapi.user import User
 from dateutil.parser import parse
 
-
-def printif(string: str, logging: bool) -> None:
-    if logging:
-        print(string)
-
 def sanitize_string(string: str) -> str:
     """
     Returns a lowercase, whitespace-trimmed version of a given string.
@@ -58,14 +53,14 @@ def match_course(query: str, course: Course) -> bool:
 
 def _create_env_file() -> bool:
     try:
-        with open(f"_.env", "w"):
+        with open(f".env", "w"):
             return True
     except OSError as e:
         raise OSError("Fatal error: failed to create new .env file.") from e
 
 def _update_env_file(**kwargs: str) -> bool:
     try:
-        path = dv.find_dotenv(filename="_.env", raise_error_if_not_found=True)
+        path = dv.find_dotenv(raise_error_if_not_found=True)
         for key, value in kwargs.items():
             dv.set_key(dotenv_path=path,key_to_set=key, value_to_set=value)
         return True
@@ -73,9 +68,10 @@ def _update_env_file(**kwargs: str) -> bool:
         raise IOError("Fatal error: did not find .env file.") from e
 
 def _get_canvas_object_from_env_file() -> Canvas:
-    path = dv.find_dotenv(filename="_.env")
-    if not path:
-        raise FileNotFoundError("No .env file was found.")
+    try:
+        path = dv.find_dotenv(raise_error_if_not_found=True)
+    except IOError as e:
+        raise FileNotFoundError("No .env file was found.") from e
 
     dv.load_dotenv(dotenv_path=path)
     API_URL = os.getenv("CANVAS_API_URL")
@@ -105,8 +101,8 @@ def create_canvas_object() -> Canvas:
             api_key = input("Enter your API key from Canvas: ")
             _update_env_file(CANVAS_API_URL="https://canvas.liberty.edu", CANVAS_API_KEY=api_key)
 
-def get_courses_from_canvas_object(canvas: Canvas, logging = True, enrolled_as = "designer", **kwargs) -> list[Course]:
-    printif("Loading courses from Canvas...", logging)
+def get_courses_from_canvas_object(canvas: Canvas, enrolled_as = "designer", **kwargs) -> list[Course]:
+    print("Loading courses from Canvas...")
     courses = canvas.get_courses(enrollment_type=enrolled_as, **kwargs)
 
     return courses
@@ -242,19 +238,15 @@ def prompt_for_assignment(course: Course, has_due_date = True) -> Assignment:
             print(f"You chose {assignment.name}.")
             return assignment
 
-def set_time_limit_for_quiz(course: Course,
-                            student: User, 
-                            quiz: Quiz, 
-                            time_multiplier: float, 
-                            logging = True) -> None:
+def set_time_limit_for_quiz(student: User, quiz: Quiz, time_multiplier: float) -> None:
 
     if not quiz.time_limit:
-        printif(f"{quiz.title} has no time limit.", logging)
+        print(f"{quiz.title} has no time limit.")
         return
-    
+
     extra_time = quiz.time_limit * time_multiplier
 
-    printif(f"Updating {quiz.title} (default time limit is {quiz.time_limit} minutes)...", logging)
+    print(f"Updating {quiz.title} (default time limit is {quiz.time_limit} minutes)...")
 
     quiz.set_extensions([
         {
@@ -263,9 +255,9 @@ def set_time_limit_for_quiz(course: Course,
         }
     ])
 
-    printif(f"{quiz.title} updated! {student.name} now has {extra_time} minutes extra on this quiz.", logging)
+    print(f"{quiz.title} updated! {student.name} now has {extra_time} minutes extra on this quiz.")
 
-def set_time_limits_for_quizzes(course: Course, student: User, time_multiplier: float, logging = True) -> None:
+def set_time_limits_for_quizzes(course: Course, student: User, time_multiplier: float) -> None:
     """
     Updates the time limit extensions for all timed quizzes in the given course 
     for the given student. They are set to `time_multiplier` times the default 
@@ -278,19 +270,16 @@ def set_time_limits_for_quizzes(course: Course, student: User, time_multiplier: 
 
     `student`: [User](https://canvasapi.readthedocs.io/en/stable/user-ref.html)
         The student to modify time limit extensions for.
-    
+
     `time_multiplier`: float
         The proportion of the time limit that should be added as a time limit 
         extension for each quiz.
-    
-    `logging`: bool
-        Whether or not the function should log to the console for each updated quiz.
     """
 
     quizzes = [quiz for quiz in course.get_quizzes() if quiz.time_limit]
 
     for quiz in quizzes:
-        set_time_limit_for_quiz(course, student, quiz, time_multiplier, logging)
+        set_time_limit_for_quiz(student, quiz, time_multiplier)
 
 def get_assignment_or_quiz_due_date(course: Course, assignment: Assignment) -> datetime:
     if assignment.is_quiz_assignment:
@@ -299,5 +288,5 @@ def get_assignment_or_quiz_due_date(course: Course, assignment: Assignment) -> d
         due_date = parse(quiz.due_at)
     else:
         due_date = parse(assignment.due_at)
-    
+
     return due_date

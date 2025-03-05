@@ -5,8 +5,8 @@ To-do List
 Phase 2: Generalizing processes
 -------------------------------
 
-* Fix setup process for Mac
-  * Figure out how to do navigation on Mac
+* ~~Fix setup process for Mac~~
+  * ~~Figure out how to do navigation on Mac~~
   * Rename .env file so that it doesn't create an infinite loop on error
 * Custom exception classes (see [link](https://stackoverflow.com/questions/9054820/python-requests-exception-handling))
   * Connection timed out
