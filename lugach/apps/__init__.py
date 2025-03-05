@@ -1,16 +1,25 @@
+import importlib
+
+"""
+Edit this variable to enable/disable applications in LUGACH.
+Two applications are commented out by default; these make
+use of Lighthouse, which is a proprietary application that
+affects sensitive student information. As such, they are
+deprecated applications. Use them at your own risk, and with
+awareness that they may not be working.
+"""
 __all__ = [
     "setup",
     "identify_absent_students",
     "identify_quiz_concerns",
     "modify_due_dates",
     "modify_time_limits",
-    "post_final_grades",
+    # "post_final_grades",
     "search_student_by_name",
-    "update_attendance_verification",
+    # "update_attendance_verification",
     "modify_attendance",
+    "take_attendance",
 ]
-
-import importlib
 
 def lint_app_name(app_name: str) -> bool:
     if type(app_name) is not str:
