@@ -130,6 +130,14 @@ def prompt_user_for_th_student(course: dict[str], auth_header: dict[str, str]) -
             print(f"    {student['name']}")
         print()
 
+def get_attendance_item(auth_header: dict[str, str], attendance_id: int):
+    attendance_item_url = f"https://app.tophat.com/api/v2/attendance/{attendance_id}"
+
+    attendance_item_response = requests.get(attendance_item_url, headers=auth_header)
+    attendance_item_response.raise_for_status()
+
+    return attendance_item_response.json()
+
 def get_all_th_attendance_proportions_for_course(course: dict[str], auth_header: dict) -> dict[int, tuple]:
     course_id = course["course_id"]
     gradeable_items_url = f"https://app.tophat.com/api/gradebook/v1/gradeable_items/{course_id}/?limit=2000"
@@ -253,3 +261,55 @@ def edit_attendance(course_id: int, student_id: int, attendance_id: int, new_att
     response.raise_for_status()
 
     print("Successfully modified attendance!")
+
+def get_active_attendance(auth_header: dict[str, str], course_id: int):
+    active_attendance_url = f"https://app.tophat.com/api/v3/attendance/get_active_attendance/?course_id={course_id}"
+
+    active_attendance_response = requests.get(active_attendance_url, headers=auth_header)
+    active_attendance_response.raise_for_status()
+
+    return active_attendance_response.json()
+
+def create_attendance(auth_header: dict[str, str], course_id: int, attempt_limit=3, start_securely=False) -> tuple[dict, bool]:
+    active_attendance = get_active_attendance(auth_header, course_id)
+    if active_attendance:
+        active_attendance_id = active_attendance[0]["id"]
+
+        attendance_item = get_attendance_item(auth_header, active_attendance_id)
+        attendance_code = attendance_item["code"]
+
+        print(f"Attendance already exists; the code is {attendance_code}")
+        return attendance_item, False
+
+    create_attendance_url = "https://app.tophat.com/api/v2/attendance/"
+    create_attendance_payload = {
+        "answered": False,
+        "attempt_limit": attempt_limit,
+        "code": None,
+        "course": f"/api/v1/course_module/{course_id}/",
+        "module": "attendance",
+        "start_securely": start_securely,
+    }
+    auth_header["Course-Id"] = str(course_id)
+
+    create_attendance_response = requests.post(create_attendance_url, json=create_attendance_payload, headers=auth_header)
+    create_attendance_response.raise_for_status()
+    create_attendance_data = create_attendance_response.json()
+
+    attendance_code = create_attendance_data["code"]
+
+    print(f"Created new attendance item! The code is {attendance_code}.")
+    return create_attendance_data, True
+
+def close_attendance(auth_header: dict[str, str],  course_id: int, attendance_item_id: int):
+    close_attendance_url = "https://app.tophat.com/api/v2/module_item_status/"
+    close_attendance_payload = {
+        "items": [attendance_item_id],
+        "status": "inactive",
+    }
+    auth_header["Course-Id"] = str(course_id)
+
+    close_attendance_response = requests.post(close_attendance_url, json=close_attendance_payload, headers=auth_header)
+    close_attendance_response.raise_for_status()
+
+    print(f"Attendance item {attendance_item_id} closed.")
