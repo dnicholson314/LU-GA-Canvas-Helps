@@ -303,6 +303,17 @@ def create_attendance(auth_header: dict[str, str], course_id: int, attempt_limit
     print(f"Created new attendance item! The code is {attendance_code}.")
     return create_attendance_data, True
 
+def monitor_attendance(auth_header, course_id, attendance_item_id):
+    attendance_monitoring_url = f"https://app.tophat.com/api/gradebook/v1/gradeable_items/{course_id}/item/{attendance_item_id}/metadata/"
+    attendance_monitoring_response = requests.get(attendance_monitoring_url, headers=auth_header)
+    attendance_monitoring_response.raise_for_status()
+
+    attendance_monitoring_data = attendance_monitoring_response.json()
+    attended_students = attendance_monitoring_data["correct_answers_count"]
+    total_students = attendance_monitoring_data["assigned_students_count"]
+
+    return attended_students, total_students
+
 def close_attendance(auth_header: dict[str, str],  course_id: int, attendance_item_id: int):
     close_attendance_url = "https://app.tophat.com/api/v2/module_item_status/"
     close_attendance_payload = {
