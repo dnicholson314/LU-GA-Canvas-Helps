@@ -216,6 +216,8 @@ def get_attendance_records_for_student_in_course(course: dict[str], student: dic
     attendance_records = []
     for name, id in attendance_item_names_and_ids:
         attendance_item = _find_attendance_item_in_attendance_gradebook_data(attendance_gradebook_data, id)
+        if not attendance_item:
+            continue
 
         date_taken_str = name[:10] # Strip off the time
         date_taken = datetime.strptime(date_taken_str, "%Y-%m-%d").date()

@@ -13,13 +13,6 @@ Phase 2: Generalizing processes
   * Failed to get credentials from .env file
   * TH auth refused
   * LH auth refused
-* Top Hat API for python
-  * Create analogue for Paginated List except to handle large lists of students
-  * Use the process that `canvasapi` uses to create course/student objects
-  * Handle error codes from server (what to do when we receive no data)
-* Lighthouse API
-  * Create student objects
-  * ✅ Handle error codes from server
 * Create unified student object that combines Canvas/TH/LH
 
 Phase 3: Implementing GUI
