@@ -3,9 +3,6 @@ import lugach.cvutils as cvu
 
 from itertools import batched
 
-CONCERN_SUBJECT = ""
-CONCERN_MESSAGE = ""
-
 def find_quiz_concern_students(course):
     student_ids = [student.id for student in course.get_users(enrollment_type="student")]
     quiz_ids = [assn.id for assn in course.get_assignments(bucket="past", order_by="due_at") if "online_quiz" in assn.submission_types]
@@ -32,7 +29,8 @@ def print_selected_students(quiz_concern_students):
         print(f"{indicator} {i+1}. {student.name}")
 
 def confirm_students_for_msg(quiz_concern_students):
-    print(f"\nThe following students have missed {cs.QUIZ_CONCERN_TOLERANCE} or more quizzes:")
+    print()
+    print(f"The following students have missed {cs.QUIZ_CONCERN_TOLERANCE} or more quizzes:")
 
     while True:
         print_selected_students(quiz_concern_students)
@@ -50,39 +48,42 @@ def confirm_students_for_msg(quiz_concern_students):
                 break
             except ValueError:
                 print("Expected 'q' or an index within range. Try again.")
-        
+
         selected_student = list(quiz_concern_students)[selected_student_index]
         quiz_concern_students[selected_student] = not quiz_concern_students[selected_student]
 
-def send_msg(quiz_concern_students, canvas, course):
+def send_msg(quiz_concern_students, instructor_name, canvas, course):
     quiz_concern_students = confirm_students_for_msg(quiz_concern_students)
+    subject = cs.QUIZ_CONCERN_SUBJECT.format(course_name=course.name)
+    body = cs.QUIZ_CONCERN_BODY.format(instructor_name=instructor_name)
+
     print("------MESSAGE------")
     print()
-    print(f"{CONCERN_SUBJECT}")
+    print(f"{subject}")
     print()
-    print(f"{CONCERN_MESSAGE}")
+    print(f"{body}")
     print()
     print("-------------------")
     print_selected_students(quiz_concern_students)
+
     final_confirmation = input("FINAL CONFIRMATION: Do you want to message these students? (y/n) ")
     if final_confirmation != "y":
         return
 
-    canvas.create_conversation(recipients = [student.id for student in quiz_concern_students],
-                               subject = CONCERN_SUBJECT,
-                               body = CONCERN_MESSAGE,
-                               context_code=f"course_{course.id}")
+    canvas.create_conversation(
+        recipients = [student.id for student in quiz_concern_students],
+        subject = subject,
+        body = body,
+        context_code=f"course_{course.id}",
+    )
     print("Message sent!")
 
-def main():    
+def main():
     canvas = cvu.create_canvas_object()
     course = cvu.prompt_for_course(canvas)
     print()
-    name = input("Enter your name (this will go in the signature of the email): ")
+    instructor_name = input("Enter your name (this will go in the signature of the email): ")
     print()
-
-    CONCERN_SUBJECT = f"Quiz concern - {course.name}"
-    CONCERN_MESSAGE = f"Hello, I've noticed that you've missed multiple quizzes this semester. Make sure to keep up with the class announcements and modules in Canvas. There are two extra credit opportunities that can help you make up the points missed due at the end of the semester.\n\nLet me know if you have any questions!\n{name}"
 
     quiz_concern_students = find_quiz_concern_students(course)
 
@@ -90,4 +91,4 @@ def main():
         print("No students need quiz concern emails sent!")
         input("Press ENTER to quit.")
     else:
-        send_msg(quiz_concern_students, canvas, course)
+        send_msg(quiz_concern_students, instructor_name, canvas, course)

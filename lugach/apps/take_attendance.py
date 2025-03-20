@@ -1,4 +1,3 @@
-import requests
 import lugach.thutils as thu
 
 def main():
