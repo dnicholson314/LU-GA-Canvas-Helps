@@ -123,3 +123,25 @@ def get_lh_students(course_sis_id: str, lh_auth_header: dict[str, str]) -> list[
 
     students = response.json()
     return students
+
+def post_final_grade(course_sis_id, lh_auth_header, student, grade):
+    if grade not in ["A", "B", "C", "D", "F"]:
+        raise TypeError("Expected a letter grade (A, B, C, D, or F) for the grade parameter.")
+
+    id = student["id"]
+    grades_url = f"https://lighthouse.okd.liberty.edu/rest/enrollments/{id}/grade?courseSisId={course_sis_id}&sis=banner&lms=canvas_lu"
+    payload = {
+        "grade": grade
+    }
+
+    for i in range(1, cs.RELOAD_ATTEMPTS + 1):
+        response = requests.post(url=grades_url, json=payload, headers=lh_auth_header)
+        if response.status_code != 200:
+            print(f"{response.request.method} request returned with code {response.status_code}; retrying... ({i} of {cs.RELOAD_ATTEMPTS} attempts so far)")
+            continue
+
+        break
+    else:
+        raise PermissionError("Failed to log into Lighthouse.")
+
+    return True

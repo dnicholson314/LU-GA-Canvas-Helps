@@ -1,6 +1,5 @@
 import lugach.lhutils as lhu
 import lugach.cvutils as cvu
-import requests
 import lugach.constants as cs
 
 WARNING_MESSAGE = """\
@@ -19,28 +18,6 @@ def get_grade_from_points(points):
             return grade
 
     return "F"
-
-def post_final_grade(course_sis_id, lh_auth_header, student, grade):
-    if grade not in ["A", "B", "C", "D", "F"]:
-        raise TypeError("Expected a letter grade (A, B, C, D, or F) for the grade parameter.")
-
-    id = student["id"]
-    grades_url = f"https://lighthouse.okd.liberty.edu/rest/enrollments/{id}/grade?courseSisId={course_sis_id}&sis=banner&lms=canvas_lu"
-    payload = {
-        "grade": grade
-    }
-
-    for i in range(1, cs.RELOAD_ATTEMPTS + 1):
-        response = requests.post(url=grades_url, json=payload, headers=lh_auth_header)
-        if response.status_code != 200:
-            print(f"{response.request.method} request returned with code {response.status_code}; retrying... ({i} of {cs.RELOAD_ATTEMPTS} attempts so far)")
-            continue
-
-        break
-    else:
-        raise PermissionError("Failed to log into Lighthouse.")
-
-    return True
 
 def post_final_grades(course_sis_id, lh_auth_header, students):
     for i, student in enumerate(students):
@@ -68,7 +45,7 @@ def post_final_grades(course_sis_id, lh_auth_header, students):
         else:
             grade = get_grade_from_points(points)
 
-        final_grade_posted = post_final_grade(course_sis_id, lh_auth_header, student, grade)
+        final_grade_posted = lhu.post_final_grade(course_sis_id, lh_auth_header, student, grade)
         if not final_grade_posted:
             print(f"Final grade failed to post for {student}... ({i} so far)")
             continue
