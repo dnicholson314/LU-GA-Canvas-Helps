@@ -19,6 +19,7 @@ __all__ = [
     # "update_attendance_verification",
     "modify_attendance",
     "take_attendance",
+    "get_grades",
 ]
 
 def lint_app_name(app_name: str) -> bool:

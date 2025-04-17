@@ -218,7 +218,7 @@ def filter_assignments_by_query(source: list[Assignment], query: str, has_due_da
 def prompt_for_assignment(course: Course, has_due_date = True) -> Assignment:
     all_assignments = [assignment for assignment in course.get_assignments() if not has_due_date or assignment.due_at]
     source = all_assignments
-    
+
     while True:
         print("Which assignment would you like to access?")
         print("The options are:")

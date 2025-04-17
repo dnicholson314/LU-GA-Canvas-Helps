@@ -1,5 +1,3 @@
-import requests
-
 import lugach.thutils as thu
 
 def _find_student_by_id(students: dict, desired_student_id: int) -> dict:
