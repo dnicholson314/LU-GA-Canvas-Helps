@@ -33,7 +33,7 @@ extract it to a folder on your computer.)
 Next, install the dependencies and the CLI using uv:
 
 ```bash
-uv pip install -e .
+uv tool install . -e
 ```
 
 ## Usage
