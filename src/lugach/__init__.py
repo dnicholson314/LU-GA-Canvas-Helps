@@ -1,5 +1,5 @@
 import traceback as tb
-from lugach import apps
+from . import apps
 
 HEADER = """
     Welcome to LUGACH! Please choose one of the following options (or 'q' to quit): \
@@ -69,8 +69,3 @@ def main():
             process_choice(choice)
         except Exception as e:
             handle_exception(e)
-
-
-if __name__ == "__main__":
-    main()
-

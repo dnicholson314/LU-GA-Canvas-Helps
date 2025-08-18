@@ -7,11 +7,6 @@ Phase 2: Generalizing processes
 * ~~Fix setup process for Mac~~
   * ~~Figure out how to do navigation on Mac~~
   * Rename .env file so that it doesn't create an infinite loop on error
-* Custom exception classes (see [link](https://stackoverflow.com/questions/9054820/python-requests-exception-handling))
-  * Connection timed out
-  * Failed to get credentials from .env file
-  * TH auth refused
-  * LH auth refused
 * Top Hat API for python
   * Create analogue for Paginated List except to handle large lists of students
   * Use the process that `canvasapi` uses to create course/student objects
@@ -25,7 +20,6 @@ Phase 3: Implementing GUI
 -------------------------
 
 * Encrypting sensitive information
-  * ~~Encrypt LH API endpoints (to be especially careful since student information is at stake here)~~
 * Config application
   * Credentials
     * Get user's Canvas API key
