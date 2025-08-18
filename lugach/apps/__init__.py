@@ -22,6 +22,7 @@ __all__ = [
     "get_grades",
 ]
 
+
 def lint_app_name(app_name: str) -> bool:
     if type(app_name) is not str:
         raise TypeError(f"Expected a string for the app name: {app_name}.")
@@ -30,16 +31,17 @@ def lint_app_name(app_name: str) -> bool:
 
     return True
 
+
 def title_from_app_name(app_name: str) -> str:
     lint_app_name(app_name)
 
-    title = app_name \
-        .replace("_", " ") \
-        .title()
+    title = app_name.replace("_", " ").title()
     return title
+
 
 def run_app_from_app_name(app_name: str):
     lint_app_name(app_name)
 
     app = importlib.import_module(f"lugach.apps.{app_name}")
     app.main()
+

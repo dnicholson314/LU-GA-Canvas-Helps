@@ -1,12 +1,21 @@
 import lugach.thutils as thu
 
+
 def convert_attendance_record_to_str(attendance_record: dict):
-    attendance_indicator = "✅" if attendance_record["attended"] else "🆗" if attendance_record["excused"] else "❌"
-    return f"( {attendance_indicator} ) {attendance_record["date_taken"]}"
+    attendance_indicator = (
+        "✅"
+        if attendance_record["attended"]
+        else "🆗"
+        if attendance_record["excused"]
+        else "❌"
+    )
+    return f"( {attendance_indicator} ) {attendance_record['date_taken']}"
+
 
 def list_attendance_records(attendance_records: list[dict]):
     for i, record in enumerate(attendance_records, start=1):
         print(f"{i:4}. {convert_attendance_record_to_str(record)}")
+
 
 def prompt_user_for_attendance_record_to_edit(attendance_records: list[dict]) -> dict:
     while True:
@@ -26,9 +35,12 @@ def prompt_user_for_attendance_record_to_edit(attendance_records: list[dict]) ->
 
     return chosen_record
 
+
 def prompt_user_for_attendance_option() -> thu.AttendanceOptions:
     while True:
-        choice = input("Would you like to mark the student as (p)resent, (e)xcused, or (a)bsent?")
+        choice = input(
+            "Would you like to mark the student as (p)resent, (e)xcused, or (a)bsent?"
+        )
         if choice not in ["p", "e", "a", "present", "excused", "absent"]:
             print("Invalid choice. Try again.")
             continue
@@ -55,9 +67,13 @@ def main():
         student = thu.prompt_user_for_th_student(course, auth_header)
 
         while True:
-            attendance_records = thu.get_attendance_records_for_student_in_course(course, student, auth_header)
+            attendance_records = thu.get_attendance_records_for_student_in_course(
+                course, student, auth_header
+            )
 
-            chosen_record = prompt_user_for_attendance_record_to_edit(attendance_records)
+            chosen_record = prompt_user_for_attendance_record_to_edit(
+                attendance_records
+            )
             new_attendance = prompt_user_for_attendance_option()
 
             thu.edit_attendance(
@@ -69,11 +85,16 @@ def main():
             )
 
             print()
-            keep_looping_records = input(f"Would you like to modify more attendance records for {student["name"]}? (y/n): ")
+            keep_looping_records = input(
+                f"Would you like to modify more attendance records for {student['name']}? (y/n): "
+            )
             if keep_looping_records != "y":
                 break
 
         print()
-        keep_looping_students = input(f"Would you like to modify more attendance records for {course["course_name"]}? (y/n): ")
+        keep_looping_students = input(
+            f"Would you like to modify more attendance records for {course['course_name']}? (y/n): "
+        )
         if keep_looping_students != "y":
             break
+

@@ -32,9 +32,10 @@ SETUP_COMPLETE = """\
     Press ENTER to quit.
 """
 
+
 def main():
     continue_setup = input(WELCOME_MESSAGE)
-    if continue_setup == 'q':
+    if continue_setup == "q":
         return
 
     print()
@@ -47,15 +48,16 @@ def main():
     th_setup = input(TOP_HAT_MESSAGE)
     print()
 
-    if th_setup == 'y':
+    if th_setup == "y":
         thu.update_env_file_with_th_auth_token()
 
     print()
     lh_setup = input(LIGHTHOUSE_MESSAGE)
     print()
 
-    if lh_setup == 'y':
+    if lh_setup == "y":
         lhu.prompt_user_for_liberty_credentials()
 
     print()
     input(SETUP_COMPLETE)
+

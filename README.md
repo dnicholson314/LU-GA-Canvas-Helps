@@ -45,8 +45,9 @@ python main.py
 
 **The first time you run the project, you should open the Setup application**:
 
-```
-    Welcome to LUGACH! Please choose one of the following options (or 'q' to quit): 
+```txt
+    Welcome to LUGACH! Please choose one of the following options (or 'q' to
+quit): 
         (1) Setup **this option here**
         (2) Identify Absent Students
         (3) Identify Quiz Concerns

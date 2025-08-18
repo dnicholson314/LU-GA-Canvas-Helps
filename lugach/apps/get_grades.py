@@ -1,5 +1,6 @@
 import lugach.cvutils as cvu
 
+
 def main():
     canvas = cvu.create_canvas_object()
     course = cvu.prompt_for_course(canvas)
@@ -17,13 +18,18 @@ def main():
         submission = assignment.get_submission(student.id)
 
         if submission and submission.workflow_state == "graded":
-            print(f"{assignment.name:30.30} | {submission.score:4.0f} / {assignment.points_possible:<4.0f}")
+            print(
+                f"{assignment.name:30.30} | {submission.score:4.0f} / {assignment.points_possible:<4.0f}"
+            )
             total_score += submission.score
             total_points += assignment.points_possible
         else:
-            print(f"{assignment.name:30.30} | ---- / {assignment.points_possible:<4.0f}")
+            print(
+                f"{assignment.name:30.30} | ---- / {assignment.points_possible:<4.0f}"
+            )
 
-    print(f"----------------------------------------------")
+    print("----------------------------------------------")
     print(f"{'Total':<30} | {total_score:4.0f} / {total_points:<4.0f}")
     print()
     input("Press ENTER to continue.")
+

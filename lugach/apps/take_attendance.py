@@ -1,5 +1,6 @@
 import lugach.thutils as thu
 
+
 def main():
     auth_header = thu.get_auth_header_for_session()
 
@@ -9,9 +10,10 @@ def main():
     attendance_item, _ = thu.create_attendance(auth_header, course_id)
     attendance_item_id = attendance_item["id"]
 
-
     while True:
-        attended_students, total_students = thu.monitor_attendance(auth_header, course_id, attendance_item_id)
+        attended_students, total_students = thu.monitor_attendance(
+            auth_header, course_id, attendance_item_id
+        )
 
         print()
         print(f"Attendance: {attended_students}/{total_students}")

@@ -1,6 +1,7 @@
 import os
 from datetime import datetime
 
+from canvasapi.page import PaginatedList
 import dotenv as dv
 from canvasapi import Canvas
 from canvasapi.assignment import Assignment
@@ -9,6 +10,7 @@ from canvasapi.exceptions import BadRequest, InvalidAccessToken
 from canvasapi.quiz import Quiz
 from canvasapi.user import User
 from dateutil.parser import parse
+
 
 def sanitize_string(string: str) -> str:
     """
@@ -25,6 +27,7 @@ def sanitize_string(string: str) -> str:
         The result after sanitizing.
     """
     return string.strip().lower()
+
 
 def course_name_with_date(course: Course) -> str:
     """
@@ -43,7 +46,8 @@ def course_name_with_date(course: Course) -> str:
     """
 
     start_date = parse(course.start_at)
-    return f"{course.name} ({start_date.month}-{start_date.year})" 
+    return f"{course.name} ({start_date.month}-{start_date.year})"
+
 
 def match_course(query: str, course: Course) -> bool:
     sanitized_query = sanitize_string(query)
@@ -51,21 +55,24 @@ def match_course(query: str, course: Course) -> bool:
 
     return sanitized_query in sanitized_course_name_with_date
 
+
 def _create_env_file() -> bool:
     try:
-        with open(f".env", "w"):
+        with open(".env", "w"):
             return True
     except OSError as e:
         raise OSError("Fatal error: failed to create new .env file.") from e
+
 
 def _update_env_file(**kwargs: str) -> bool:
     try:
         path = dv.find_dotenv(raise_error_if_not_found=True)
         for key, value in kwargs.items():
-            dv.set_key(dotenv_path=path,key_to_set=key, value_to_set=value)
+            dv.set_key(dotenv_path=path, key_to_set=key, value_to_set=value)
         return True
     except IOError as e:
         raise IOError("Fatal error: did not find .env file.") from e
+
 
 def _get_canvas_object_from_env_file() -> Canvas:
     try:
@@ -83,9 +90,12 @@ def _get_canvas_object_from_env_file() -> Canvas:
         canvas = Canvas(API_URL, API_KEY)
         canvas.get_courses()[0]
     except InvalidAccessToken as e:
-        raise InvalidAccessToken("You entered an invalid API key in the .env file.") from e
+        raise InvalidAccessToken(
+            "You entered an invalid API key in the .env file."
+        ) from e
 
     return canvas
+
 
 def create_canvas_object() -> Canvas:
     while True:
@@ -99,13 +109,19 @@ def create_canvas_object() -> Canvas:
         except (NameError, InvalidAccessToken) as e:
             print(e)
             api_key = input("Enter your API key from Canvas: ")
-            _update_env_file(CANVAS_API_URL="https://canvas.liberty.edu", CANVAS_API_KEY=api_key)
+            _update_env_file(
+                CANVAS_API_URL="https://canvas.liberty.edu", CANVAS_API_KEY=api_key
+            )
 
-def get_courses_from_canvas_object(canvas: Canvas, enrolled_as = "designer", **kwargs) -> list[Course]:
+
+def get_courses_from_canvas_object(
+    canvas: Canvas, enrolled_as="designer", **kwargs
+) -> PaginatedList:
     print("Loading courses from Canvas...")
     courses = canvas.get_courses(enrollment_type=enrolled_as, **kwargs)
 
     return courses
+
 
 def filter_courses_by_query(courses: list[Course], query: str) -> list[Course]:
     init_courses = [course for course in courses if course.start_at]
@@ -113,9 +129,10 @@ def filter_courses_by_query(courses: list[Course], query: str) -> list[Course]:
 
     return course_results
 
+
 def prompt_for_course(canvas: Canvas) -> Course:
     """
-    Uses a simple command line interface to prompt the user to choose a modifiable course. 
+    Uses a simple command line interface to prompt the user to choose a modifiable course.
     In order for a user to select a course, they must be added as a Designer to the course in Canvas.
     Additionally, the course must have a start date.
 
@@ -129,8 +146,10 @@ def prompt_for_course(canvas: Canvas) -> Course:
     [Course](https://canvasapi.readthedocs.io/en/stable/course-ref.html)
         Points to the course the user chose.
     """
-    
-    all_course_results = [course for course in get_courses_from_canvas_object(canvas) if course.start_at]
+
+    all_course_results = [
+        course for course in get_courses_from_canvas_object(canvas) if course.start_at
+    ]
     course_results = all_course_results
 
     while True:
@@ -150,25 +169,32 @@ def prompt_for_course(canvas: Canvas) -> Course:
             print(f"You chose {course.name}.")
             return course
 
-def filter_users_by_query(source: Course | list[User], query: str, enrolled_as = "student") -> list[User]:
-    if type(source) == Course:
-        return list(source.get_users(search_term = query, enrollment_type = enrolled_as))
-    elif type(source) == list:
+
+def filter_users_by_query(
+    source: Course | list[User], query: str, enrolled_as="student"
+) -> list[User]:
+    if type(source) is Course:
+        return list(source.get_users(search_term=query, enrollment_type=enrolled_as))
+    elif type(source) is list:
         sanitized_query = sanitize_string(query)
-        return [user for user in source if sanitized_query in sanitize_string(user.name)]
+        return [
+            user for user in source if sanitized_query in sanitize_string(user.name)
+        ]
     else:
         raise TypeError("Expected Course object or list")
 
+
 def process_bad_request(e: BadRequest) -> bool:
     args_string = e.args[0]
-    if type(args_string) != str:
+    if type(args_string) is not str:
         raise e
-            
+
     if "2 or more characters is required" not in args_string:
         raise e
-            
+
     print("Too few characters, try again")
     return True
+
 
 def prompt_for_student(course: Course) -> User:
     """
@@ -211,12 +237,24 @@ def prompt_for_student(course: Course) -> User:
             print(f"    {student.name}")
         print()
 
-def filter_assignments_by_query(source: list[Assignment], query: str, has_due_date = True) -> list[Assignment]:
-    sanitized_query = sanitize_string(query)
-    return [assignment for assignment in source if sanitized_query in sanitize_string(assignment.name)]
 
-def prompt_for_assignment(course: Course, has_due_date = True) -> Assignment:
-    all_assignments = [assignment for assignment in course.get_assignments() if not has_due_date or assignment.due_at]
+def filter_assignments_by_query(
+    source: list[Assignment], query: str, has_due_date=True
+) -> list[Assignment]:
+    sanitized_query = sanitize_string(query)
+    return [
+        assignment
+        for assignment in source
+        if sanitized_query in sanitize_string(assignment.name)
+    ]
+
+
+def prompt_for_assignment(course: Course, has_due_date=True) -> Assignment:
+    all_assignments = [
+        assignment
+        for assignment in course.get_assignments()
+        if not has_due_date or assignment.due_at
+    ]
     source = all_assignments
 
     while True:
@@ -238,8 +276,8 @@ def prompt_for_assignment(course: Course, has_due_date = True) -> Assignment:
             print(f"You chose {assignment.name}.")
             return assignment
 
-def set_time_limit_for_quiz(student: User, quiz: Quiz, time_multiplier: float) -> None:
 
+def set_time_limit_for_quiz(student: User, quiz: Quiz, time_multiplier: float) -> None:
     if not quiz.time_limit:
         print(f"{quiz.title} has no time limit.")
         return
@@ -248,19 +286,19 @@ def set_time_limit_for_quiz(student: User, quiz: Quiz, time_multiplier: float) -
 
     print(f"Updating {quiz.title} (default time limit is {quiz.time_limit} minutes)...")
 
-    quiz.set_extensions([
-        {
-            "user_id": student.id,
-            "extra_time": extra_time
-        }
-    ])
+    quiz.set_extensions([{"user_id": student.id, "extra_time": extra_time}])
 
-    print(f"{quiz.title} updated! {student.name} now has {extra_time} minutes extra on this quiz.")
+    print(
+        f"{quiz.title} updated! {student.name} now has {extra_time} minutes extra on this quiz."
+    )
 
-def set_time_limits_for_quizzes(course: Course, student: User, time_multiplier: float) -> None:
+
+def set_time_limits_for_quizzes(
+    course: Course, student: User, time_multiplier: float
+) -> None:
     """
-    Updates the time limit extensions for all timed quizzes in the given course 
-    for the given student. They are set to `time_multiplier` times the default 
+    Updates the time limit extensions for all timed quizzes in the given course
+    for the given student. They are set to `time_multiplier` times the default
     time limit for the quiz.
 
     Parameters
@@ -272,7 +310,7 @@ def set_time_limits_for_quizzes(course: Course, student: User, time_multiplier: 
         The student to modify time limit extensions for.
 
     `time_multiplier`: float
-        The proportion of the time limit that should be added as a time limit 
+        The proportion of the time limit that should be added as a time limit
         extension for each quiz.
     """
 
@@ -280,6 +318,7 @@ def set_time_limits_for_quizzes(course: Course, student: User, time_multiplier: 
 
     for quiz in quizzes:
         set_time_limit_for_quiz(student, quiz, time_multiplier)
+
 
 def get_assignment_or_quiz_due_date(course: Course, assignment: Assignment) -> datetime:
     if assignment.is_quiz_assignment:
@@ -290,3 +329,4 @@ def get_assignment_or_quiz_due_date(course: Course, assignment: Assignment) -> d
         due_date = parse(assignment.due_at)
 
     return due_date
+

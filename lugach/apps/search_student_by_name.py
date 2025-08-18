@@ -3,10 +3,12 @@ import lugach.cvutils as cvu
 from canvasapi.exceptions import BadRequest
 from itertools import chain
 
+
 def print_selected_courses(selected_courses):
     for i, (course, selected) in enumerate(selected_courses.items()):
         indicator = "*" if selected else " "
-        print(f"{indicator} {i+1}. {cvu.course_name_with_date(course)}")
+        print(f"{indicator} {i + 1}. {cvu.course_name_with_date(course)}")
+
 
 def confirm_courses_to_search(selected_courses):
     while True:
@@ -14,7 +16,9 @@ def confirm_courses_to_search(selected_courses):
 
         while True:
             try:
-                user_selection = input("Choose the courses to search by index (or 'q' to quit): ")
+                user_selection = input(
+                    "Choose the courses to search by index (or 'q' to quit): "
+                )
                 if user_selection == "q":
                     return selected_courses
 
@@ -29,6 +33,7 @@ def confirm_courses_to_search(selected_courses):
         selected_course = list(selected_courses)[selected_course_index]
         selected_courses[selected_course] = not selected_courses[selected_course]
 
+
 def take_student_query(sources):
     while True:
         try:
@@ -38,13 +43,18 @@ def take_student_query(sources):
         except BadRequest as e:
             cvu.process_bad_request(e)
 
+
 def main():
     canvas = cvu.create_canvas_object()
     courses = cvu.get_courses_from_canvas_object(canvas)
 
     init_courses = {course: False for course in courses if course.start_at}
     selected_courses_dict = confirm_courses_to_search(init_courses)
-    selected_courses = [course for course in selected_courses_dict.keys() if selected_courses_dict[course]]
+    selected_courses = [
+        course
+        for course in selected_courses_dict.keys()
+        if selected_courses_dict[course]
+    ]
 
     while True:
         sources = selected_courses
@@ -74,7 +84,7 @@ def main():
                     course = selected_courses[i]
                     print(f"    {student.name:25} ({course.name})")
             print()
-        
+
         name = student.name
         index_of_course = sources.index([student])
         course = selected_courses[index_of_course]
@@ -86,6 +96,9 @@ def main():
         print(f"Email: {email}")
         print()
 
-        keep_looping = input(f"Would you like to keep looking for students in these courses? (y/n): ")
+        keep_looping = input(
+            "Would you like to keep looking for students in these courses? (y/n): "
+        )
         if cvu.sanitize_string(keep_looping) != "y":
             break
+

@@ -1,14 +1,22 @@
 import lugach.thutils as thu
 
-def _find_student_by_id(students: dict, desired_student_id: int) -> dict:
+
+def _find_student_by_id(
+    students: list[thu.Student], desired_student_id: int
+) -> dict | None:
     for student in students:
         current_student_id = student["id"]
         if desired_student_id == current_student_id:
             return student
 
-def get_tolerance_groups(auth_header, course, tolerance) -> tuple[dict, dict]:
+
+def get_tolerance_groups(
+    auth_header: thu.AuthHeader, course: thu.Course, tolerance: int
+) -> tuple[dict, dict]:
     students = thu.get_th_students(auth_header, course)
-    attendance_proportions = thu.get_all_th_attendance_proportions_for_course(course, auth_header)
+    attendance_proportions = thu.get_all_th_attendance_proportions_for_course(
+        course, auth_header
+    )
 
     students_under_tolerance = {}
     students_at_tolerance = {}
@@ -30,12 +38,17 @@ def get_tolerance_groups(auth_header, course, tolerance) -> tuple[dict, dict]:
 
     return (students_under_tolerance, students_at_tolerance)
 
+
 def main():
     auth_header = thu.get_auth_header_for_session()
     course = thu.prompt_user_for_th_course(auth_header)
-    tolerance = int(input("Enter the max number of absences for the course (generally 4): "))
+    tolerance = int(
+        input("Enter the max number of absences for the course (generally 4): ")
+    )
 
-    students_under_tolerance, students_at_tolerance = get_tolerance_groups(auth_header, course, tolerance)
+    students_under_tolerance, students_at_tolerance = get_tolerance_groups(
+        auth_header, course, tolerance
+    )
 
     s = "" if tolerance - 1 == 1 else "s"
     print()
@@ -51,3 +64,4 @@ def main():
 
     print()
     input("Press ENTER to quit.")
+
