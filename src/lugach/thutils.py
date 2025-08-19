@@ -26,7 +26,7 @@ def get_th_auth_token_from_env_file() -> str:
     except IOError as e:
         raise FileNotFoundError("No .env file was found.") from e
 
-    dv.load_dotenv(dotenv_path=path)
+    dv.load_dotenv(dotenv_path=path, override=True)
     TH_AUTH_KEY = os.getenv("TH_AUTH_KEY")
     if not TH_AUTH_KEY:
         raise NameError("Failed to load TH auth key from .env file.")

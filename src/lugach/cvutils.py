@@ -80,7 +80,7 @@ def _get_canvas_object_from_env_file() -> Canvas:
     except IOError as e:
         raise FileNotFoundError("No .env file was found.") from e
 
-    dv.load_dotenv(dotenv_path=path)
+    dv.load_dotenv(dotenv_path=path, override=True)
     API_URL = os.getenv("CANVAS_API_URL")
     API_KEY = os.getenv("CANVAS_API_KEY")
     if not API_URL or not API_KEY:
@@ -329,4 +329,3 @@ def get_assignment_or_quiz_due_date(course: Course, assignment: Assignment) -> d
         due_date = parse(assignment.due_at)
 
     return due_date
-
