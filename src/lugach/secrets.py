@@ -89,3 +89,38 @@ def get_secret(key: str) -> str:
     value = _decrypt_token(token)
 
     return value
+
+
+def get_credentials(id: str) -> tuple[str, str]:
+    """
+    Retrieve stored credentials (username/password) for a given id
+    from the encrypted .env file.
+    Returns a (username, password) tuple or raises an error if not found.
+    """
+    ENV_PATH.touch()
+    dv.load_dotenv(dotenv_path=ENV_PATH, override=True)
+
+    username_token = os.getenv(f"{id}_USERNAME")
+    password_token = os.getenv(f"{id}_PASSWORD")
+
+    if not username_token or not password_token:
+        raise NameError(f"Failed to load credentials for id {id}")
+
+    username = _decrypt_token(username_token)
+    password = _decrypt_token(password_token)
+    return username, password
+
+
+def set_credentials(id: str, username: str, password: str) -> None:
+    """
+    Store credentials (username/password) for a given id
+    in the encrypted .env file.
+    """
+    ENV_PATH.touch()
+
+    update_env_file(
+        **{
+            f"{id}_USERNAME": username,
+            f"{id}_PASSWORD": password,
+        }
+    )

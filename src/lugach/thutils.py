@@ -25,9 +25,6 @@ class AttendanceOptions(Enum):
 
 def _get_th_auth_token_from_env_file() -> str:
     TH_AUTH_KEY = get_secret(AUTH_KEY_SECRET_NAME)
-    if not TH_AUTH_KEY:
-        raise NameError("Failed to load TH auth key from .env file.")
-
     return TH_AUTH_KEY
 
 
