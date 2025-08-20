@@ -1,8 +1,8 @@
 from canvasapi.exceptions import InvalidAccessToken
-import lugach.cvutils as cvu
-from lugach.secrets import update_env_file
-import lugach.thutils as thu
-import lugach.lhutils as lhu
+import lugach.core.cvutils as cvu
+from lugach.core.secrets import update_env_file
+import lugach.core.thutils as thu
+import lugach.core.lhutils as lhu
 
 WELCOME_MESSAGE = """\
     Welcome to LUGACH! This application will walk you through the steps

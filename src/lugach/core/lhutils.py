@@ -1,5 +1,5 @@
 import requests
-import lugach.constants as cs
+import lugach.core.constants as cs
 
 from canvasapi.course import Course
 
@@ -10,7 +10,7 @@ from selenium.common.exceptions import StaleElementReferenceException, TimeoutEx
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 
-from lugach.secrets import get_credentials, set_credentials
+from lugach.core.secrets import get_credentials, set_credentials
 
 CREDENTIALS_ID = "LU_LIGHTHOUSE"
 

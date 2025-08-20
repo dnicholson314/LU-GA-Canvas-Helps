@@ -3,7 +3,7 @@ A command line script that automatically applies quiz/test time limit accomodati
 for a given student in a given Canvas course.
 """
 
-import lugach.cvutils as cvu
+import lugach.core.cvutils as cvu
 
 
 def main():
@@ -34,4 +34,3 @@ def main():
         )
         if keep_looping != "y":
             break
-

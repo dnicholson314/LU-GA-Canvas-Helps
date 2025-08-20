@@ -1,4 +1,4 @@
-import lugach.thutils as thu
+import lugach.core.thutils as thu
 
 
 def _find_student_by_id(
@@ -64,4 +64,3 @@ def main():
 
     print()
     input("Press ENTER to quit.")
-

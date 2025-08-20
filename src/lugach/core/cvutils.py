@@ -9,7 +9,7 @@ from canvasapi.quiz import Quiz
 from canvasapi.user import User
 from dateutil.parser import parse
 
-from lugach import secrets
+from lugach.core import secrets
 
 API_URL_SECRET_NAME = "CANVAS_API_URL"
 API_KEY_SECRET_NAME = "CANVAS_API_KEY"

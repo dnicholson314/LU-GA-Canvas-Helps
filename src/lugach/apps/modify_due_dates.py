@@ -1,4 +1,4 @@
-import lugach.cvutils as cvu
+import lugach.core.cvutils as cvu
 
 from dateutil.parser import parse
 from datetime import datetime
@@ -49,4 +49,3 @@ def main():
         )
         if keep_looping != "y":
             break
-

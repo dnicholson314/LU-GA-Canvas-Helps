@@ -1,6 +1,6 @@
-import lugach.lhutils as lhu
-import lugach.cvutils as cvu
-import lugach.constants as cs
+import lugach.core.lhutils as lhu
+import lugach.core.cvutils as cvu
+import lugach.core.constants as cs
 
 WARNING_MESSAGE = """\
     ▲ WARNING: THIS PROGRAM WILL POST FINAL GRADES FOR 
@@ -79,4 +79,3 @@ def main():
         return
 
     post_final_grades(course_sis_id, lh_auth_header, students)
-

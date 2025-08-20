@@ -1,4 +1,4 @@
-import lugach.thutils as thu
+import lugach.core.thutils as thu
 
 
 def convert_attendance_record_to_str(attendance_record: dict):
@@ -97,4 +97,3 @@ def main():
         )
         if keep_looping_students != "y":
             break
-

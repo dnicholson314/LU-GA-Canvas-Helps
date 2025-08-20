@@ -1,4 +1,4 @@
-import lugach.cvutils as cvu
+import lugach.core.cvutils as cvu
 
 from canvasapi.exceptions import BadRequest
 from itertools import chain
@@ -101,4 +101,3 @@ def main():
         )
         if cvu.sanitize_string(keep_looping) != "y":
             break
-

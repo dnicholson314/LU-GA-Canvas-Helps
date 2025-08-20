@@ -44,4 +44,3 @@ def run_app_from_app_name(app_name: str):
 
     app = importlib.import_module(f"lugach.apps.{app_name}")
     app.main()
-

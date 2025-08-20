@@ -1,4 +1,4 @@
-import lugach.thutils as thu
+import lugach.core.thutils as thu
 
 
 def main():

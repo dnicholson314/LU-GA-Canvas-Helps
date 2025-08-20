@@ -1,4 +1,4 @@
-import lugach.cvutils as cvu
+import lugach.core.cvutils as cvu
 
 
 def main():
@@ -32,4 +32,3 @@ def main():
     print(f"{'Total':<30} | {total_score:4.0f} / {total_points:<4.0f}")
     print()
     input("Press ENTER to continue.")
-

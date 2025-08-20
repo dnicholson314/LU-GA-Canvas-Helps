@@ -1,11 +1,11 @@
 from typing import Any
 
-import lugach.cvutils as cvu
+import lugach.core.cvutils as cvu
 import requests
 from enum import Enum
 from datetime import datetime
 
-from lugach.secrets import get_secret
+from lugach.core.secrets import get_secret
 
 type Course = dict[str, Any]
 type Student = dict[str, Any]

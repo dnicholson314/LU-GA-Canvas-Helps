@@ -1,7 +1,7 @@
 from canvasapi.canvas import Course
 from canvasapi.user import User
-import lugach.constants as cs
-import lugach.cvutils as cvu
+import lugach.core.constants as cs
+import lugach.core.cvutils as cvu
 
 from itertools import batched
 

@@ -1,18 +1,16 @@
 
-
 # LUGACH
 
 ![PyPI](https://img.shields.io/pypi/v/lugach)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/lugach)](https://pypi.org/project/lugach/)
 
-LU GA Canvas Helps (LUGACH) is a cross-platform Python CLI tool designed to 
-automate and streamline daily administrative tasks for Graduate Assistants (GAs) 
-at Liberty University. LUGACH integrates with Canvas, Top Hat, and Lighthouse, 
-providing a unified interface for managing student data, assignments, attendance, 
+LU GA Canvas Helps (LUGACH) is a cross-platform Python CLI tool designed to
+automate and streamline daily administrative tasks for Graduate Assistants (GAs)
+at Liberty University. LUGACH integrates with Canvas, Top Hat, and Lighthouse,
+providing a unified interface for managing student data, assignments, attendance,
 and more.
 
 **PyPI:** [https://pypi.org/project/lugach/](https://pypi.org/project/lugach/)
-
 
 ## Features
 
@@ -25,9 +23,6 @@ and more.
 - Securely manage authentication credentials for all platforms
 - Routine update and feedback mechanisms for error reporting
 
----
-
-
 ## Requirements
 
 - Python 3.12.0 or later
@@ -35,12 +30,11 @@ and more.
 - [uv](https://github.com/astral-sh/uv) (recommended for developers)
 - Git (recommended for contributors)
 
-
 ## Installation
 
 ### For Users
 
-Install and run LUGACH globally using 
+Install and run LUGACH globally using
 [pipx](https://pypa.github.io/pipx/):
 
 ```bash
@@ -61,7 +55,7 @@ lugach
 
 ### For Developers/Contributors
 
-Clone the repository and install in editable mode with 
+Clone the repository and install in editable mode with
 [uv](https://github.com/astral-sh/uv):
 
 ```bash
@@ -75,7 +69,6 @@ You can now run the CLI with:
 ```bash
 lugach
 ```
-
 
 ## Usage
 
@@ -103,16 +96,12 @@ When you first run LUGACH, you will see a menu like this:
         (9) Modify Attendance
 ```
 
-Select **Setup** to add your authentication details for Canvas, Top Hat, and 
-Lighthouse. These credentials are stored securely and are required for the other 
+Select **Setup** to add your authentication details for Canvas, Top Hat, and
+Lighthouse. These credentials are stored securely and are required for the other
 features to function.
-
----
-
 
 ## Contributing
 
-Contributions are welcome! If you have suggestions or bug reports, feel free to 
-open an issue or submit a pull request. Sorry for my undocumented and all around 
+Contributions are welcome! If you have suggestions or bug reports, feel free to
+open an issue or submit a pull request. Sorry for my undocumented and all around
 shabby code 😭
-
