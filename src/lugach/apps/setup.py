@@ -1,4 +1,6 @@
+from canvasapi.exceptions import InvalidAccessToken
 import lugach.cvutils as cvu
+from lugach.secrets import update_env_file
 import lugach.thutils as thu
 import lugach.lhutils as lhu
 
@@ -33,6 +35,29 @@ SETUP_COMPLETE = """\
 """
 
 
+def set_up_canvas_api_key():
+    while True:
+        try:
+            cvu.create_canvas_object()
+            break
+        except (NameError, InvalidAccessToken) as e:
+            print(e)
+            api_url = input("Enter the Canvas API url: ")
+            api_key = input("Enter the Canvas API key: ")
+            update_env_file(CANVAS_API_URL=api_url, CANVAS_API_KEY=api_key)
+
+
+def set_up_th_auth_key():
+    while True:
+        try:
+            thu.get_auth_header_for_session()
+            return
+        except (NameError, ConnectionRefusedError) as e:
+            print(e)
+            th_auth_key = input("Enter the auth key from Top Hat: ")
+            update_env_file(TH_AUTH_KEY=th_auth_key)
+
+
 def main():
     continue_setup = input(WELCOME_MESSAGE)
     if continue_setup == "q":
@@ -42,14 +67,14 @@ def main():
     print(CANVAS_MESSAGE)
     print()
 
-    cvu.create_canvas_object()
+    set_up_canvas_api_key()
 
     print()
     th_setup = input(TOP_HAT_MESSAGE)
     print()
 
     if th_setup == "y":
-        thu.update_env_file_with_th_auth_token()
+        set_up_th_auth_key()
 
     print()
     lh_setup = input(LIGHTHOUSE_MESSAGE)
@@ -60,4 +85,3 @@ def main():
 
     print()
     input(SETUP_COMPLETE)
-

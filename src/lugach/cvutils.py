@@ -1,8 +1,6 @@
-import os
 from datetime import datetime
 
 from canvasapi.page import PaginatedList
-import dotenv as dv
 from canvasapi import Canvas
 from canvasapi.assignment import Assignment
 from canvasapi.course import Course
@@ -10,6 +8,11 @@ from canvasapi.exceptions import BadRequest, InvalidAccessToken
 from canvasapi.quiz import Quiz
 from canvasapi.user import User
 from dateutil.parser import parse
+
+from lugach import secrets
+
+API_URL_SECRET_NAME = "CANVAS_API_URL"
+API_KEY_SECRET_NAME = "CANVAS_API_KEY"
 
 
 def sanitize_string(string: str) -> str:
@@ -56,33 +59,9 @@ def match_course(query: str, course: Course) -> bool:
     return sanitized_query in sanitized_course_name_with_date
 
 
-def _create_env_file() -> bool:
-    try:
-        with open(".env", "w"):
-            return True
-    except OSError as e:
-        raise OSError("Fatal error: failed to create new .env file.") from e
-
-
-def _update_env_file(**kwargs: str) -> bool:
-    try:
-        path = dv.find_dotenv(raise_error_if_not_found=True)
-        for key, value in kwargs.items():
-            dv.set_key(dotenv_path=path, key_to_set=key, value_to_set=value)
-        return True
-    except IOError as e:
-        raise IOError("Fatal error: did not find .env file.") from e
-
-
-def _get_canvas_object_from_env_file() -> Canvas:
-    try:
-        path = dv.find_dotenv(raise_error_if_not_found=True)
-    except IOError as e:
-        raise FileNotFoundError("No .env file was found.") from e
-
-    dv.load_dotenv(dotenv_path=path, override=True)
-    API_URL = os.getenv("CANVAS_API_URL")
-    API_KEY = os.getenv("CANVAS_API_KEY")
+def create_canvas_object() -> Canvas:
+    API_URL = secrets.get_secret(API_URL_SECRET_NAME)
+    API_KEY = secrets.get_secret(API_KEY_SECRET_NAME)
     if not API_URL or not API_KEY:
         raise NameError("Failed to load URL and key from .env file.")
 
@@ -90,28 +69,11 @@ def _get_canvas_object_from_env_file() -> Canvas:
         canvas = Canvas(API_URL, API_KEY)
         canvas.get_courses()[0]
     except InvalidAccessToken as e:
-        raise InvalidAccessToken(
-            "You entered an invalid API key in the .env file."
-        ) from e
+        message = "You entered an invalid API key in the .env file."
+        raise InvalidAccessToken(message) from e
 
+    print("Canvas API key found!")
     return canvas
-
-
-def create_canvas_object() -> Canvas:
-    while True:
-        try:
-            canvas = _get_canvas_object_from_env_file()
-            print("Canvas API key found!")
-            return canvas
-        except FileNotFoundError as e:
-            print(e)
-            _create_env_file()
-        except (NameError, InvalidAccessToken) as e:
-            print(e)
-            api_key = input("Enter your API key from Canvas: ")
-            _update_env_file(
-                CANVAS_API_URL="https://canvas.liberty.edu", CANVAS_API_KEY=api_key
-            )
 
 
 def get_courses_from_canvas_object(

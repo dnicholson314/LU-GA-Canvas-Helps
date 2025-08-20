@@ -1,11 +1,11 @@
-import os
 from typing import Any
 
 import lugach.cvutils as cvu
-import dotenv as dv
 import requests
 from enum import Enum
 from datetime import datetime
+
+from lugach.secrets import get_secret
 
 type Course = dict[str, Any]
 type Student = dict[str, Any]
@@ -14,20 +14,17 @@ type AttendanceItem = dict[str, Any]
 type AttendanceProportion = tuple[int, int]
 
 
+AUTH_KEY_SECRET_NAME = "TH_AUTH_KEY"
+
+
 class AttendanceOptions(Enum):
     PRESENT = 0
     ABSENT = 1
     EXCUSED = 2
 
 
-def get_th_auth_token_from_env_file() -> str:
-    try:
-        path = dv.find_dotenv(raise_error_if_not_found=True)
-    except IOError as e:
-        raise FileNotFoundError("No .env file was found.") from e
-
-    dv.load_dotenv(dotenv_path=path, override=True)
-    TH_AUTH_KEY = os.getenv("TH_AUTH_KEY")
+def _get_th_auth_token_from_env_file() -> str:
+    TH_AUTH_KEY = get_secret(AUTH_KEY_SECRET_NAME)
     if not TH_AUTH_KEY:
         raise NameError("Failed to load TH auth key from .env file.")
 
@@ -37,7 +34,7 @@ def get_th_auth_token_from_env_file() -> str:
 def get_auth_header_for_session() -> AuthHeader:
     jwt_url = "https://app.tophat.com/identity/v1/refresh_jwt/"
     jwt_data = {
-        "th_jwt_refresh": get_th_auth_token_from_env_file(),
+        "th_jwt_refresh": _get_th_auth_token_from_env_file(),
     }
 
     jwt_response = requests.post(jwt_url, json=jwt_data)
@@ -61,20 +58,6 @@ def get_th_courses(auth_header: AuthHeader) -> list[Course]:
     courses = payload["objects"]
 
     return courses
-
-
-def update_env_file_with_th_auth_token() -> None:
-    while True:
-        try:
-            get_auth_header_for_session()
-            return
-        except FileNotFoundError as e:
-            print(e)
-            cvu._create_env_file()
-        except (NameError, ConnectionRefusedError) as e:
-            print(e)
-            th_auth_key = input("Enter the auth key from Top Hat: ")
-            cvu._update_env_file(TH_AUTH_KEY=th_auth_key)
 
 
 def prompt_user_for_th_course(auth_header: AuthHeader) -> Course:

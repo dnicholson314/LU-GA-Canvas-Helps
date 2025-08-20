@@ -35,4 +35,3 @@ _GRADE_CUTOFFS = {
     "D": 600,
 }
 GRADE_RANGES = _get_grade_ranges()
-
