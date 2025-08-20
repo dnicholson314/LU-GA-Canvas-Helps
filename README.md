@@ -1,35 +1,59 @@
+
+
 # LUGACH
 
-LU GA Canvas Helps (or LUGACH for short) is a Python application that provides
-a number of utilities designed to make daily tasks more efficient for GAs at
-Liberty University.
+![PyPI](https://img.shields.io/pypi/v/lugach)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/lugach)](https://pypi.org/project/lugach/)
 
-It synchronizes across Canvas, Top Hat, and Lighthouse to automate tasks such
-as confirming student enrollment, retrieving emails, modifying due dates/time
-limits on quizzes/assignments, and more.
+LU GA Canvas Helps (LUGACH) is a cross-platform Python CLI tool designed to 
+automate and streamline daily administrative tasks for Graduate Assistants (GAs) 
+at Liberty University. LUGACH integrates with Canvas, Top Hat, and Lighthouse, 
+providing a unified interface for managing student data, assignments, attendance, 
+and more.
+
+**PyPI:** [https://pypi.org/project/lugach/](https://pypi.org/project/lugach/)
+
+
+## Features
+
+- Synchronize and cross-reference data between Canvas, Top Hat, and Lighthouse
+- Confirm student enrollment and retrieve student emails
+- Modify due dates and time limits on quizzes and assignments
+- Take and update attendance records
+- Identify absent students and quiz concerns
+- Post final grades and search for students by name
+- Securely manage authentication credentials for all platforms
+- Routine update and feedback mechanisms for error reporting
+
+---
+
 
 ## Requirements
 
-The project currently requires Python 3.12.0. See below for installation
-instructions for typical users and for developers/contributors.
+- Python 3.12.0 or later
+- [pipx](https://pypa.github.io/pipx/) (recommended for users)
+- [uv](https://github.com/astral-sh/uv) (recommended for developers)
+- Git (recommended for contributors)
 
-It's also helpful to have Git installed on your machine if you plan to
-contribute to development.
 
 ## Installation
 
-### For Typical Users
+### For Users
 
-The easiest way to install and run LUGACH is with
-[pipx](https://pypa.github.io/pipx/), which will install the tool in an
-isolated environment and make the `lugach` command available globally:
+Install and run LUGACH globally using 
+[pipx](https://pypa.github.io/pipx/):
 
 ```bash
 pipx install lugach
 ```
 
-After installation, you can run the project from anywhere using the CLI
-command:
+Or install with pip:
+
+```bash
+pip install lugach
+```
+
+After installation, run the CLI from anywhere:
 
 ```bash
 lugach
@@ -37,33 +61,37 @@ lugach
 
 ### For Developers/Contributors
 
-First, use git to clone the project to a local folder:
+Clone the repository and install in editable mode with 
+[uv](https://github.com/astral-sh/uv):
 
 ```bash
 git clone https://github.com/dnicholson314/LU-GA-Canvas-Helps.git
 cd LU-GA-Canvas-Helps
+uv pip install -e .
 ```
 
-Next, install the dependencies and the CLI in editable mode using
-[uv](https://github.com/astral-sh/uv):
-
-```bash
-uv tool install . -e
-```
-
-You can now run the project using:
+You can now run the CLI with:
 
 ```bash
 lugach
 ```
 
+
 ## Usage
 
-**The first time you run the project, you should open the Setup application**:
+After installation, simply run:
+
+```bash
+lugach
+```
+
+**First-time setup:**
+
+When you first run LUGACH, you will see a menu like this:
 
 ```txt
-    Welcome to LUGACH! Please choose one of the following options
-(or 'q' to quit): 
+    Welcome to LUGACH! Please choose one of the following options 
+    (or 'q' to quit):
         (1) Setup **this option here**
         (2) Identify Absent Students
         (3) Identify Quiz Concerns
@@ -75,5 +103,16 @@ lugach
         (9) Modify Attendance
 ```
 
-That application will let you add the various authentication details you need
-for various aspects of the project.
+Select **Setup** to add your authentication details for Canvas, Top Hat, and 
+Lighthouse. These credentials are stored securely and are required for the other 
+features to function.
+
+---
+
+
+## Contributing
+
+Contributions are welcome! If you have suggestions or bug reports, feel free to 
+open an issue or submit a pull request. Sorry for my undocumented and all around 
+shabby code 😭
+
