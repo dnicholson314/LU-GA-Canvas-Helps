@@ -36,4 +36,3 @@ jobs:
           files: |
             dist/*.tar.gz
             dist/*.whl
-        generate_release_notes: true
