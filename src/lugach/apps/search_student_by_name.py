@@ -46,7 +46,7 @@ def take_student_query(sources):
 
 def main():
     canvas = cvu.create_canvas_object()
-    courses = cvu.get_courses_from_canvas_object(canvas)
+    courses = cvu.get_courses(canvas)
 
     init_courses = {course: False for course in courses if course.start_at}
     selected_courses_dict = confirm_courses_to_search(init_courses)

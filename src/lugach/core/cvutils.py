@@ -72,14 +72,10 @@ def create_canvas_object() -> Canvas:
         message = "You entered an invalid API key in the .env file."
         raise InvalidAccessToken(message) from e
 
-    print("Canvas API key found!")
     return canvas
 
 
-def get_courses_from_canvas_object(
-    canvas: Canvas, enrolled_as="designer", **kwargs
-) -> PaginatedList:
-    print("Loading courses from Canvas...")
+def get_courses(canvas: Canvas, enrolled_as="designer", **kwargs) -> PaginatedList:
     courses = canvas.get_courses(enrollment_type=enrolled_as, **kwargs)
 
     return courses
@@ -109,9 +105,7 @@ def prompt_for_course(canvas: Canvas) -> Course:
         Points to the course the user chose.
     """
 
-    all_course_results = [
-        course for course in get_courses_from_canvas_object(canvas) if course.start_at
-    ]
+    all_course_results = [course for course in get_courses(canvas) if course.start_at]
     course_results = all_course_results
 
     while True:

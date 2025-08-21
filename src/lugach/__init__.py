@@ -14,7 +14,7 @@ def cli() -> None:
 @click.option("--list", is_flag=True, help="List the currently available apps.")
 @click.option("-i", is_flag=True, help="Run the interactive CLI.")
 def app(app_name: str | None, i: bool | None, list: bool | None) -> None:
-    """Run CLI applications to perform GSA tasks interactively.
+    """Run CLI applications to perform GSA tasks on the command line.
 
     Use APP_NAME to specify the app to run. See --list for a list of apps.
     """
