@@ -1,4 +1,5 @@
 import importlib
+import traceback as tb
 
 """
 Edit this variable to enable/disable applications in LUGACH.
@@ -8,19 +9,31 @@ affects sensitive student information. As such, they are
 deprecated applications. Use them at your own risk, and with
 awareness that they may not be working.
 """
-__all__ = [
-    "setup",
-    "identify_absent_students",
-    "identify_quiz_concerns",
-    "modify_due_dates",
-    "modify_time_limits",
-    # "post_final_grades",
-    "search_student_by_name",
-    # "update_attendance_verification",
-    "modify_attendance",
-    "take_attendance",
-    "get_grades",
-]
+app_names_and_descriptions = {
+    "setup": "Setup secret variables necessary for the other applications.",
+    "identify_absent_students": "Identify students who have missed an excessive number of classes.",
+    "identify_quiz_concerns": "Notify students who have failed to complete an excessive number of quizzes.",
+    "modify_due_dates": "Change due dates for a given student and assignment.",
+    "modify_time_limits": "Add percent time to all quizzes for a given student.",
+    # "post_final_grades": "Post final grades for all students in a class.",
+    "search_student_by_name": "Search all classes for a given student.",
+    # "update_attendance_verification": "Complete attendance verification in Lighthouse.",
+    "modify_attendance": "Change attendance records for students in Top Hat.",
+    "take_attendance": "Take and monitor attendance in Top Hat.",
+    "get_grades": "View a student's grades in Canvas.",
+}
+
+
+__all__ = [*app_names_and_descriptions]
+
+
+def handle_exception(e):
+    print()
+    print("Encountered exception ----------------------------------")
+    print(*e.args)
+    tb.print_tb(e.__traceback__)
+    print("--------------------------------------------------------")
+    input("Press ENTER to continue.")
 
 
 def lint_app_name(app_name: str) -> bool:
@@ -42,5 +55,11 @@ def title_from_app_name(app_name: str) -> str:
 def run_app_from_app_name(app_name: str):
     lint_app_name(app_name)
 
-    app = importlib.import_module(f"lugach.apps.{app_name}")
-    app.main()
+    try:
+        app = importlib.import_module(f"lugach.apps.{app_name}")
+        app.main()
+    except (KeyboardInterrupt, EOFError):
+        print()
+        print("Application terminated.")
+    except Exception as e:
+        handle_exception(e)
