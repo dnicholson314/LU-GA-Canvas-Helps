@@ -130,7 +130,11 @@ def filter_users_by_query(
     source: Course | list[User], query: str, enrolled_as="student"
 ) -> list[User]:
     if type(source) is Course:
-        return list(source.get_users(search_term=query, enrollment_type=enrolled_as))
+        kwargs = {"search_term": query}
+        if enrolled_as:
+            kwargs["enrollment_type"] = enrolled_as
+
+        return list(source.get_users(**kwargs))
     elif type(source) is list:
         sanitized_query = sanitize_string(query)
         return [

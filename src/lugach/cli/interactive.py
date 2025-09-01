@@ -1,4 +1,4 @@
-from . import apps
+from lugach import apps
 
 HEADER = """
     Welcome to LUGACH! Please choose one of the following options (or 'q' to quit): \

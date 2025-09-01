@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Optional
 
 import lugach.core.cvutils as cvu
 import requests
@@ -39,7 +39,6 @@ def get_auth_header_for_session() -> AuthHeader:
     if jwt_response.status_code != 201:
         raise ConnectionRefusedError("Unable to obtain JWT token")
 
-    print("JWT bearer token obtained!")
     jwt_token = jwt_response.json()["th_jwt"]
 
     auth_header = {"Authorization": f"Bearer {jwt_token}"}
@@ -91,8 +90,17 @@ def prompt_user_for_th_course(auth_header: AuthHeader) -> Course:
             return course
 
 
-def get_th_students(auth_header: AuthHeader, course: Course) -> list[Student]:
-    course_id = course["course_id"]
+def get_th_students(
+    auth_header: AuthHeader,
+    course: Optional[Course] = None,
+    course_id: Optional[int] = None,
+) -> list[Student]:
+    if not course_id:
+        if not course:
+            raise TypeError("No course or course_id given.")
+
+        course_id = course["course_id"]
+
     students_url = f"https://app.tophat.com/api/v3/course/{course_id}/students/"
 
     response = requests.get(url=students_url, headers=auth_header)
