@@ -1,4 +1,3 @@
-
 # LUGACH
 
 ![PyPI](https://img.shields.io/pypi/v/lugach)
@@ -41,16 +40,10 @@ Install and run LUGACH globally using
 pipx install lugach
 ```
 
-Or install with pip:
-
-```bash
-pip install lugach
-```
-
 After installation, run the CLI from anywhere:
 
 ```bash
-lugach
+lugach --help
 ```
 
 ### For Developers/Contributors
@@ -64,26 +57,34 @@ cd LU-GA-Canvas-Helps
 uv pip install -e .
 ```
 
-You can now run the CLI with:
-
-```bash
-lugach
-```
-
 ## Usage
 
-After installation, simply run:
+Run this command for the interactive CLI:
 
 ```bash
-lugach
+lugach app -i
+```
+
+For information about the commands that retrieve Canvas data about courses or
+students, use
+
+```bash
+lugach cv --help
+```
+
+For information about the commands that retrieve Top Hat data about courses or
+students, use
+
+```bash
+lugach th --help
 ```
 
 **First-time setup:**
 
-When you first run LUGACH, you will see a menu like this:
+When you first run LUGACH in interactive mode, you will see a menu like this:
 
 ```txt
-    Welcome to LUGACH! Please choose one of the following options 
+    Welcome to LUGACH! Please choose one of the following options
     (or 'q' to quit):
         (1) Setup **this option here**
         (2) Identify Absent Students
